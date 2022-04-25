@@ -1,0 +1,28 @@
+{
+  "name": "monsters",
+  "version": "1.0.0",
+  "description": "",
+  "main": "hardhat.config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0",
+    "chai": "^4.3.6",
+    "hardhat": "^2.9.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/burke-md/monsters.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/burke-md/monsters/issues"
+  },
+  "homepage": "https://github.com/burke-md/monsters#readme"
+}
