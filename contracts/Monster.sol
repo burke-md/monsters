@@ -1,32 +1,40 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-//Import from openzeppel lib
+//->Import from openzeppel lib
 //See Figjam for list
 
-//Inherit imported libs
+//->Inherit imported libs
 contract Monster {
 
-//using statment for Counters
-//create private counter name: _tokenIdCounter
+//->using statment for Counters
+//->create private counter name: _tokenIdCounter
 
-//Uncomment after libs imported
+//->Uncomment after libs imported
 //constructor () ERC721("Monster", "MON"){}
 
+//->Create mapping of addresses and tokenId
 
-//pause func w/ onlyOwner modifyer
+/*->uncomment pause func w/ onlyOwner modifyer after imports
+  function pause() public onlyOwner {
+    _pause();
+  }
+*/
 
-//unpause func w/ onlyOwner modifyer
+//->create unpause func w/ onlyOwner modifyer (see above)
 
-/*safeMint func w/
+/*
+->create safeMint func w/
 onlyowner
 should do:
 increment counter
 internal safe mint
 set URI
+update mapping
 */
 
-/*Uncomment the following function 
+/*
+->Uncomment the following function 
 after pause/unpause implemented
 
   function _beforeTokenTransfer(address from, address to, uint256 tokenId)
@@ -40,7 +48,7 @@ after pause/unpause implemented
 
 //@Notice The following functions are overrides required to resolve conflict issues.
 
-//Uncomment after libs are imported
+//->Uncomment after libs are imported
 
 /*
   function _burn(uint256 tokenId) internal Override(ERC721, ERC721Storage) {
