@@ -4,6 +4,7 @@ pragma solidity ^0.8.4;
 //->Import from openzeppel lib
 //See Figjam for list
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+
 //->Inherit imported libs
 contract Monster {
 
