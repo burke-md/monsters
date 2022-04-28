@@ -6,10 +6,15 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 contract Battle is Ownable {
 
-  constructor(){}
-
   using Counters for Counters.Counter;
   Counters.Counter private _battleId;
+
+  struct BattleInfo {
+    uint256 id;
+    bool isComplete;
+    string initiatorMove;
+    string opponentMove;
+  }
 
   event NewBattleRecord(
     address indexed sender,
@@ -21,18 +26,25 @@ contract Battle is Ownable {
 
   // @dev the battle Id will likely be replaced by a more complex struct in the future.
 
-  mapping(address => mapping(address => uint256))
+  mapping(address => mapping(address => BattleInfo))
     public battleHistory;
 
-
-  // @notice The initiateBattle function is the first step in the battle mechanics. It simply stores data and emits some data. There are no calculations to be made here.
+  // @notice The initiateBattle function is the first step in the battle mechanics. It simply stores and emits some data. There are no calculations made here.
 
   function initiateBattle(address opponent) public {
     _battleId.increment();
 
-    battleHistory[msg.sender][opponent] = _battleId.current();
+    BattleInfo memory battleSet;
+    battleSet = BattleInfo({
+      id: _battleId.current(),
+      isComplete: false,
+      initiatorMove: "",
+      opponentMove: ""
+    });
 
-    emit NewBattleRecord(msg.sender, opponent, battleHistory[msg.sender][opponent]);
+    battleHistory[msg.sender][opponent] = battleSet;
+
+    emit NewBattleRecord(msg.sender, opponent, _battleId.current());
   }
 
   // @notice The getNumBattleRecords funtion is simply a getter funtion for testing the auto incrementing value for battleId.
@@ -40,6 +52,10 @@ contract Battle is Ownable {
   // @returns uint256 battleId of most recent initiated battle.
   function getNumBattleRecords () public view returns(uint256) {
     return _battleId.current();
+  }
+
+  function getBattleCompletionState (address initiator, address opponent) public view returns (bool) {
+    return battleHistory[initiator][opponent].isComplete;
   }
 }
 
