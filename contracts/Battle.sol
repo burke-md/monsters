@@ -18,14 +18,14 @@ contract Battle is Ownable {
   );
 
   // @dev Initiator add => opponent add => battleId 
-  
+
   // @dev the battle Id will likely be replaced by a more complex struct in the future.
 
   mapping(address => mapping(address => uint256))
     public battleHistory;
 
 
-  // @notice The initiateBattle function is the first step in the battle mechanics. It simply stores some data and emits some data. There are no calculations to be made here.
+  // @notice The initiateBattle function is the first step in the battle mechanics. It simply stores data and emits some data. There are no calculations to be made here.
 
   function initiateBattle(address opponent) public {
     _battleId.increment();
@@ -33,6 +33,13 @@ contract Battle is Ownable {
     battleHistory[msg.sender][opponent] = _battleId.current();
 
     emit NewBattleRecord(msg.sender, opponent, battleHistory[msg.sender][opponent]);
+  }
+
+  // @notice The getNumBattleRecords funtion is simply a getter funtion for testing the auto incrementing value for battleId.
+
+  // @returns uint256 battleId of most recent initiated battle.
+  function getNumBattleRecords () public view returns(uint256) {
+    return _battleId.current();
   }
 }
 

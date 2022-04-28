@@ -6,13 +6,34 @@ export const shouldBattle = (): void => {
   //   ethers.utils.Logger.setLogLevel(ethers.utils.Logger.levels.OFF);
 
   context(`#battle`, async function () {
-    it(`should emit 'NewBattleRecord' when initiate battle is called`, async function () {
+    it(`should report 0 battle records before any battles have been initiated.`, async function () {
+      const numofBattleRecords = await this.battle.connect(this.signers.alice)
+      .getNumBattleRecords();
 
+      await expect(numofBattleRecords).to.equal(0);
+    });
+
+    it(`should report 2 battle records after two battles have been initiated.`, async function () {
+      const battle1 = await this.battle
+      .connect(this.signers.alice)
+      .initiateBattle(this.signers.bob.address);
+
+      const battle2 = await this.battle
+      .connect(this.signers.alice)
+      .initiateBattle(this.signers.bob.address);
+
+      const numofBattleRecords = await this.battle.connect(this.signers.alice)
+      .getNumBattleRecords();
+
+      await expect(numofBattleRecords).to.equal(2);
+    });
+
+    it(`should emit 'NewBattleRecord' when initiateBattle() is called.`, async function () {
       await expect(
         this.battle.connect(this.signers.alice)
         .initiateBattle(this.signers.bob.address)
       ).to.emit(this.battle, `NewBattleRecord`);
     });
-    
+
   });
 };
