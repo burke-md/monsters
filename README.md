@@ -1,5 +1,5 @@
 # Monsters
-
+This is a project for the Chainlink Hackathon 2022
 
 ## Working with this repo
 
@@ -10,5 +10,6 @@ If you are experiences an error related to the import of typechain follow these 
 - Delete the artifacts, cache and typechain(if it exists) directories at the top level. These are generated files.
 
 - Run ```npx hardhat compile``` in the terminal. This will re-generate those directories with the appropriate files. 
+
 
 

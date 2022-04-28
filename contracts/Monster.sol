@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 //->Import from openzeppel lib
+  // yellow boxes in order
 //See Figjam for list
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
