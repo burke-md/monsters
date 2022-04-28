@@ -17,9 +17,15 @@ contract Battle is Ownable {
     uint256 indexed battleId
   );
 
-  //Initiator add => opponent add => battleId
+  // @dev Initiator add => opponent add => battleId 
+  
+  // @dev the battle Id will likely be replaced by a more complex struct in the future.
+
   mapping(address => mapping(address => uint256))
     public battleHistory;
+
+
+  // @notice The initiateBattle function is the first step in the battle mechanics. It simply stores some data and emits some data. There are no calculations to be made here.
 
   function initiateBattle(address opponent) public {
     _battleId.increment();
@@ -37,6 +43,7 @@ contract Battle is Ownable {
 X counter for battle
 X create new battle, w/ 2x address and battle id
 X emit event
+- store moved in battle struct?
 -calculate winner
 -update battle record
 -adjust winner/looser ELO score
