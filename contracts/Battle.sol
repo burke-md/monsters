@@ -12,5 +12,4 @@ contract Battle {
     //Update =+1 => counter. This should be an incremented ID not frequently updated val.
     battleHistory[msg.sender][opponent] += 1;
   }
-  
 }
