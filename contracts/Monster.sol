@@ -4,23 +4,24 @@ pragma solidity ^0.8.4;
 //->Import from openzeppel lib
 //See Figjam for list
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 //->Inherit imported libs
-contract Monster {
+contract Monster is ERC721, Pausable, Ownable {
+
+  constructor() ERC721("Monster", "MON") {}
 
 //->using statment for Counters
 //->create private counter name: _tokenIdCounter
 
-//->Uncomment after libs imported
-//constructor () ERC721("Monster", "MON"){}
-
 //->Create mapping of addresses and tokenId
 
-/*->uncomment pause func w/ onlyOwner modifyer after imports
+
   function pause() public onlyOwner {
     _pause();
   }
-*/
+
 
 //->create unpause func w/ onlyOwner modifyer (see above)
 
