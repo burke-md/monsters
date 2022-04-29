@@ -3,6 +3,7 @@ import { unitMonsterFixture } from "../utils/fixtures";
 import{ unitBattleFixture } from "../utils/fixtures";
 import { Signers } from "../utils/types";
 import { shouldBattle } from "./Battle/Battle.test";
+import { shouldHandleError } from "./Battle/BattleError.test"
 import { shouldMonster } from "./Monster/Monster.test"
 
 describe('Unit tests', async function () {
@@ -23,6 +24,7 @@ describe('Unit tests', async function () {
       //this.mocks = {} as Mocks;
     });
     shouldBattle();
+    shouldHandleError();
   });
   
   describe('Monster', async function () {

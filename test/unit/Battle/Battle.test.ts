@@ -4,7 +4,7 @@ export const shouldBattle = (): void => {
   //   // to silent warning for duplicate definition of Transfer event
   //   ethers.utils.Logger.setLogLevel(ethers.utils.Logger.levels.OFF);
 
-  context(`#battle`, async function () {
+  context(`#Happy Path`, async function () {
     it(`should report 0 battle records before any battles have been initiated.`, async function () {
       const numofBattleRecords = await this.battle.connect(this.signers.alice)
       .getNumBattleRecords();
@@ -34,7 +34,7 @@ export const shouldBattle = (): void => {
       ).to.emit(this.battle, `NewBattleRecord`);
     });
 
-    it(`should report each battle isComplete as false after initiation but before all battle calculations.`, async function () {
+    it(`should report each battle isComplete as false after initiation.`, async function () {
       const battle1 = await this.battle
       .connect(this.signers.alice)
       .initiateBattle(this.signers.bob.address);
@@ -45,7 +45,7 @@ export const shouldBattle = (): void => {
       await expect(isBattleComplete).to.equal(false);
     });
 
-    it(`should accept string values as moves and insert them into the appropriate BattleInfo stuct`, async function () {
+    it(`should insert 'moves' into the appropriate BattleInfo stuct`, async function () {
       const userInput = ["LEG", "ARM"];
 
       const battle1 = await this.battle
@@ -60,6 +60,6 @@ export const shouldBattle = (): void => {
 
       await expect(movesArrFromBattleInfoStruct[0]).to.equal(userInput[0]);
       await expect(movesArrFromBattleInfoStruct[1]).to.equal(userInput[1]);
-    })
+    });
   });
 };
