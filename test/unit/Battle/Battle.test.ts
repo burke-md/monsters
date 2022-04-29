@@ -40,7 +40,7 @@ export const shouldBattle = (): void => {
       .initiateBattle(this.signers.bob.address);
 
       const isBattleComplete = await this.battle.connect(this.signers.alice)
-      .getBattleCompletionState(this.signers.alice.address, this.signers.bob.address);
+      .getBattleCompletionState(1);
 
       await expect(isBattleComplete).to.equal(false);
     });

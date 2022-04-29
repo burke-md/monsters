@@ -11,6 +11,8 @@ contract Battle is Ownable {
 
   struct BattleInfo {
     uint256 id;
+    address initator;
+    address opponent;
     bool isComplete;
     string initiatorMove;
     string opponentMove;
@@ -22,11 +24,9 @@ contract Battle is Ownable {
     uint256 indexed battleId
   );
 
-  // @dev Initiator add => opponent add => battleId 
+  // @dev battleId => BattleInfo <see struct def>
 
-  // @dev the battle Id will likely be replaced by a more complex struct in the future.
-
-  mapping(address => mapping(address => BattleInfo))
+  mapping(uint256 => BattleInfo)
     public battleHistory;
 
   // @notice The initiateBattle function is the first step in the battle mechanics. It simply stores and emits some data. There are no calculations made here.
@@ -37,25 +37,38 @@ contract Battle is Ownable {
     BattleInfo memory battleSet;
     battleSet = BattleInfo({
       id: _battleId.current(),
+      initator: msg.sender,
+      opponent: opponent,
       isComplete: false,
       initiatorMove: "",
       opponentMove: ""
     });
 
-    battleHistory[msg.sender][opponent] = battleSet;
+    battleHistory[_battleId.current()] = battleSet;
 
     emit NewBattleRecord(msg.sender, opponent, _battleId.current());
   }
 
-  // @notice The getNumBattleRecords funtion is simply a getter funtion for testing the auto incrementing value for battleId.
+  // @notice The _defineBattleMoves function is the second step in the battle mechanics. It stores the two parties moves in the BattleInfo struct.
+
+  function _defineBattleMoves(string  memory initiatorMove, string memory opponentMove) public onlyOwner {
+
+  }
+
+  // @notice The getNumBattleRecords funtion is a simple getter funtion for testing the auto incrementing value for battleId.
 
   // @returns uint256 battleId of most recent initiated battle.
+
   function getNumBattleRecords () public view returns(uint256) {
     return _battleId.current();
   }
 
-  function getBattleCompletionState (address initiator, address opponent) public view returns (bool) {
-    return battleHistory[initiator][opponent].isComplete;
+  // @notice The getBattleCompletionState function is a simple getter function that returns if a battle has been completed or not.
+
+  // @returns bool This value will be false until all calculations are complete and values are updated as nessisary. 
+  
+  function getBattleCompletionState (uint256 battleId) public view returns (bool) {
+    return battleHistory[battleId].isComplete;
   }
 }
 
@@ -66,8 +79,12 @@ contract Battle is Ownable {
 X counter for battle
 X create new battle, w/ 2x address and battle id
 X emit event
-- store moved in battle struct?
+X store moved in battle struct?
+-function for inputting "moves"
+--require moved to be of acceptable type
 -calculate winner
 -update battle record
 -adjust winner/looser ELO score
+-refactor for modularity etc.
+- Resolve "blind move" issue.
 */
