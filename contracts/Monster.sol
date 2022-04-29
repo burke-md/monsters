@@ -1,28 +1,42 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-//->Import from openzeppel lib
-  // yellow boxes in order
 //See Figjam for list
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
+
 //->Inherit imported libs
-contract Monster {
+contract Monster is ERC721,ERC721Pausable,ERC721Burnable,ERC721URIStorage,Ownable,Counters {
 
 //->using statment for Counters
-//->create private counter name: _tokenIdCounter
+//->create private counter na
+ 
 
-//->Uncomment after libs imported
+  using Counters for Counters.Counter;
+  Counters.Counter private _tokenIdCounter;
+    // Counters.Counter is a pre-defined struct variable format, we're defining one Counters.counter called _tokenIdCounter
+
 //constructor () ERC721("Monster", "MON"){}
+  constructor () public ERC721("Monster", "MON") {} 
+    // constructor() is a special function type declared once, used to initialized contract state
 
 //->Create mapping of addresses and tokenId
 
-/*->uncomment pause func w/ onlyOwner modifyer after imports
+  mapping (uint => address) IdToAddress;
+
+//->uncomment pause func w/ onlyOwner modifyer after imports
   function pause() public onlyOwner {
     _pause();
   }
-*/
 
 //->create unpause func w/ onlyOwner modifyer (see above)
+  function unpause() public onlyOwner {
+    _unpause();
+  }
 
 /*
 ->create safeMint func w/
@@ -33,6 +47,31 @@ internal safe mint
 set URI
 update mapping
 */
+
+
+
+  function _vrfToTokenId(uint _vrfNum) internal returns(uint){
+    
+    /* 
+    input VRF number
+    convert to tokenId
+    check tokenId has not already been minted - maybe separate function
+    output tokenId
+    */
+
+    return _tokenId
+  }
+
+
+
+  function _mintMonster(address _ownerAddress, uint _tokenId) internal onlyOwner {
+    
+    _ownerAddress = msg.sender;
+    _tokenId = _vrfToTokenId(_vrfNum);
+
+    _safeMint(_ownerAddress, _tokenId, _data);
+    _tokenIdCounter.increment();
+  }
 
 /*
 ->Uncomment the following function 
