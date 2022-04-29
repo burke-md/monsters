@@ -24,6 +24,20 @@ contract Battle is Ownable {
     uint256 indexed battleId
   );
 
+  // @notice The _isValidMoveInput function will insure that non-approved 'moves' are not input into the BattleInfo struct.
+
+  function _validateMoveInput(string memory move) internal pure returns (bool) {
+
+    bool isValid = false;
+    bytes32 moveToByes = keccak256(bytes(move));
+
+    if(moveToByes == keccak256(bytes("ARM"))) isValid = true;
+    if(moveToByes == keccak256(bytes("LEG"))) isValid = true;
+    if(moveToByes == keccak256(bytes("BITE"))) isValid = true;
+
+    return isValid;
+  }
+
   // @dev battleId => BattleInfo <see struct def>
 
   mapping(uint256 => BattleInfo)
@@ -52,7 +66,9 @@ contract Battle is Ownable {
   // @notice The _defineBattleMoves function is the second step in the battle mechanics. It stores the two parties moves in the BattleInfo struct.
 
   function _defineBattleMoves(uint256 battleId, string  memory initiatorMove, string memory opponentMove) public onlyOwner {
-    //create badstring check first
+    require(_validateMoveInput(initiatorMove) == true, "Invalid initiator move definition.");
+    require(_validateMoveInput(opponentMove) == true, "Invalid opponent move definition.");
+
     battleHistory[battleId].initiatorMove = initiatorMove;
     battleHistory[battleId].opponentMove = opponentMove;
   }
