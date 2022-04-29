@@ -44,5 +44,22 @@ export const shouldBattle = (): void => {
 
       await expect(isBattleComplete).to.equal(false);
     });
+
+    it(`should accept string values as moves and insert them into the appropriate BattleInfo stuct`, async function () {
+      const userInput = ["LEG", "ARM"];
+
+      const battle1 = await this.battle
+      .connect(this.signers.alice)
+      .initiateBattle(this.signers.bob.address);
+
+      await this.battle
+      ._defineBattleMoves(1, userInput[0], userInput[1]);
+
+      const movesArrFromBattleInfoStruct = await this.battle
+      .getBattleMovesArr(1);
+
+      await expect(movesArrFromBattleInfoStruct[0]).to.equal(userInput[0]);
+      await expect(movesArrFromBattleInfoStruct[1]).to.equal(userInput[1]);
+    })
   });
 };

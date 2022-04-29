@@ -51,8 +51,10 @@ contract Battle is Ownable {
 
   // @notice The _defineBattleMoves function is the second step in the battle mechanics. It stores the two parties moves in the BattleInfo struct.
 
-  function _defineBattleMoves(string  memory initiatorMove, string memory opponentMove) public onlyOwner {
-
+  function _defineBattleMoves(uint256 battleId, string  memory initiatorMove, string memory opponentMove) public onlyOwner {
+    //create badstring check first
+    battleHistory[battleId].initiatorMove = initiatorMove;
+    battleHistory[battleId].opponentMove = opponentMove;
   }
 
   // @notice The getNumBattleRecords funtion is a simple getter funtion for testing the auto incrementing value for battleId.
@@ -66,9 +68,22 @@ contract Battle is Ownable {
   // @notice The getBattleCompletionState function is a simple getter function that returns if a battle has been completed or not.
 
   // @returns bool This value will be false until all calculations are complete and values are updated as nessisary. 
-  
+
   function getBattleCompletionState (uint256 battleId) public view returns (bool) {
     return battleHistory[battleId].isComplete;
+  }
+
+  // @notice The getBattleMovesArr function is a simple getter function.
+
+  // @returns array of strings [initiatorMove, opponentMove].
+  function getBattleMovesArr (uint256 battleId) public view returns (string[] memory) {
+
+    string[] memory moves = new string[](2);
+
+    moves[0] = battleHistory[battleId].initiatorMove;
+    moves[1] = battleHistory[battleId].opponentMove;
+
+    return moves;
   }
 }
 
