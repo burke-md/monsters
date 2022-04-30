@@ -4,7 +4,7 @@ export const shouldBattle = (): void => {
   //   // to silent warning for duplicate definition of Transfer event
   //   ethers.utils.Logger.setLogLevel(ethers.utils.Logger.levels.OFF);
 
-  context(`#battle`, async function () {
+  context(`#Happy Path`, async function () {
     it(`should report 0 battle records before any battles have been initiated.`, async function () {
       const numofBattleRecords = await this.battle.connect(this.signers.alice)
       .getNumBattleRecords();
@@ -34,15 +34,71 @@ export const shouldBattle = (): void => {
       ).to.emit(this.battle, `NewBattleRecord`);
     });
 
-    it(`should report each battle isComplete as false after initiation but before all battle calculations.`, async function () {
+    it(`should report each battle isComplete as false after initiation.`, async function () {
       const battle1 = await this.battle
       .connect(this.signers.alice)
       .initiateBattle(this.signers.bob.address);
 
       const isBattleComplete = await this.battle.connect(this.signers.alice)
-      .getBattleCompletionState(this.signers.alice.address, this.signers.bob.address);
+      .getBattleCompletionState(1);
 
       await expect(isBattleComplete).to.equal(false);
+    });
+
+    it(`should insert 'moves' into the appropriate BattleInfo stuct.`, async function () {
+      const userInput = ["LEG", "ARM"];
+
+      const battle1 = await this.battle
+      .connect(this.signers.alice)
+      .initiateBattle(this.signers.bob.address);
+
+      await this.battle
+      ._defineBattleMoves(1, userInput[0], userInput[1]);
+
+      const movesArrFromBattleInfoStruct = await this.battle
+      .getBattleMovesArr(1);
+
+      await expect(movesArrFromBattleInfoStruct[0]).to.equal(userInput[0]);
+      await expect(movesArrFromBattleInfoStruct[1]).to.equal(userInput[1]);
+    });
+
+    xit(`should propperly evaluate 'moves'.`, async function () {
+      const userInput1 = ["BITE", "LEG"];
+      const userInput2 = ["ARM", "LEG"];
+      const userInput3 = ["ARM", "ARM"];
+
+      const battle1 = await this.battle
+      .connect(this.signers.alice)
+      .initiateBattle(this.signers.bob.address);
+
+      await this.battle
+      ._defineBattleMoves(1, userInput1[0], userInput1[1]);
+
+      const battle2 = await this.battle
+      .connect(this.signers.alice)
+      .initiateBattle(this.signers.bob.address);
+
+      await this.battle
+      ._defineBattleMoves(2, userInput2[0], userInput2[1]);
+
+      const battle3 = await this.battle
+      .connect(this.signers.alice)
+      .initiateBattle(this.signers.bob.address);
+
+      await this.battle
+      ._defineBattleMoves(3, userInput3[0], userInput3[1]);
+
+      await this.battle._evaluateBattleMoves(1);
+      await this.battle._evaluateBattleMoves(2);
+      await this.battle._evaluateBattleMoves(3);
+
+
+      const movesArrFromBattleInfoStruct = await this.battle
+      .getBattleMovesArr(1);
+
+      await expect(this.battle.getBattleResult(1)).to.equal("INITIATOR");
+      await expect(this.battle.getBattleResult(2)).to.equal("OPPONENT");
+      await expect(this.battle.getBattleResult(3)).to.equal("DRAW");
     });
   });
 };
