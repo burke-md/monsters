@@ -3,26 +3,12 @@ pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "./utils/BattleDefinitions.sol";
 
-contract Battle is Ownable {
+contract Battle is Ownable, BattleDefinitions {
 
   using Counters for Counters.Counter;
   Counters.Counter private _battleId;
-
-  struct BattleInfo {
-    uint256 id;
-    address initator;
-    address opponent;
-    bool isComplete;
-    string initiatorMove;
-    string opponentMove;
-  }
-
-  event NewBattleRecord(
-    address indexed sender,
-    address indexed opponent,
-    uint256 indexed battleId
-  );
 
   // @notice The _isValidMoveInput function will insure that non-approved 'moves' are not input into the BattleInfo struct.
 
@@ -111,8 +97,8 @@ X counter for battle
 X create new battle, w/ 2x address and battle id
 X emit event
 X store moved in battle struct?
--function for inputting "moves"
---require moved to be of acceptable type
+X function for inputting "moves"
+X require moved to be of acceptable type
 -calculate winner
 -update battle record
 -adjust winner/looser ELO score
