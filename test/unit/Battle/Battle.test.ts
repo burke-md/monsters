@@ -45,7 +45,7 @@ export const shouldBattle = (): void => {
       await expect(isBattleComplete).to.equal(false);
     });
 
-    it(`should insert 'moves' into the appropriate BattleInfo stuct`, async function () {
+    it(`should insert 'moves' into the appropriate BattleInfo stuct.`, async function () {
       const userInput = ["LEG", "ARM"];
 
       const battle1 = await this.battle
@@ -60,6 +60,45 @@ export const shouldBattle = (): void => {
 
       await expect(movesArrFromBattleInfoStruct[0]).to.equal(userInput[0]);
       await expect(movesArrFromBattleInfoStruct[1]).to.equal(userInput[1]);
+    });
+
+    xit(`should propperly evaluate 'moves'.`, async function () {
+      const userInput1 = ["BITE", "LEG"];
+      const userInput2 = ["ARM", "LEG"];
+      const userInput3 = ["ARM", "ARM"];
+
+      const battle1 = await this.battle
+      .connect(this.signers.alice)
+      .initiateBattle(this.signers.bob.address);
+
+      await this.battle
+      ._defineBattleMoves(1, userInput1[0], userInput1[1]);
+
+      const battle2 = await this.battle
+      .connect(this.signers.alice)
+      .initiateBattle(this.signers.bob.address);
+
+      await this.battle
+      ._defineBattleMoves(2, userInput2[0], userInput2[1]);
+
+      const battle3 = await this.battle
+      .connect(this.signers.alice)
+      .initiateBattle(this.signers.bob.address);
+
+      await this.battle
+      ._defineBattleMoves(3, userInput3[0], userInput3[1]);
+
+      await this.battle._evaluateBattleMoves(1);
+      await this.battle._evaluateBattleMoves(2);
+      await this.battle._evaluateBattleMoves(3);
+
+
+      const movesArrFromBattleInfoStruct = await this.battle
+      .getBattleMovesArr(1);
+
+      await expect(this.battle.getBattleResult(1)).to.equal("INITIATOR");
+      await expect(this.battle.getBattleResult(2)).to.equal("OPPONENT");
+      await expect(this.battle.getBattleResult(3)).to.equal("DRAW");
     });
   });
 };

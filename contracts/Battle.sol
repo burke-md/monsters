@@ -41,7 +41,8 @@ contract Battle is Ownable, BattleDefinitions {
       opponent: opponent,
       isComplete: false,
       initiatorMove: "",
-      opponentMove: ""
+      opponentMove: "",
+      result: ""
     });
 
     battleHistory[_battleId.current()] = battleSet;
@@ -59,6 +60,10 @@ contract Battle is Ownable, BattleDefinitions {
     battleHistory[battleId].opponentMove = opponentMove;
   }
 
+  function _evaluateBattleMoves(uint256 battleId) public onlyOwner {
+
+  }
+
   // @notice The getNumBattleRecords funtion is a simple getter funtion for testing the auto incrementing value for battleId.
 
   // @returns uint256 battleId of most recent initiated battle.
@@ -66,6 +71,9 @@ contract Battle is Ownable, BattleDefinitions {
   function getNumBattleRecords () public view returns(uint256) {
     return _battleId.current();
   }
+
+  //========================================================//
+  //========================GETTERS=========================//
 
   // @notice The getBattleCompletionState function is a simple getter function that returns if a battle has been completed or not.
 
@@ -86,6 +94,13 @@ contract Battle is Ownable, BattleDefinitions {
     moves[1] = battleHistory[battleId].opponentMove;
 
     return moves;
+  }
+
+  // @notice The getBattleResult function is a simple getter function.
+
+  // @returns string(initator, opponent, draw).
+  function getBattleResult (uint256 battleId) public view returns (string memory) {
+    return battleHistory[battleId].result;
   }
 }
 

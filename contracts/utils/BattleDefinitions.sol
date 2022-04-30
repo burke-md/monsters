@@ -12,6 +12,7 @@ contract BattleDefinitions {
     bool isComplete;
     string initiatorMove;
     string opponentMove;
+    string result;
   }
 
   // @notice This is the definition for the event to be emitted as a battle is initiated.
