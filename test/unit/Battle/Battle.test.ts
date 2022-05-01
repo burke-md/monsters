@@ -62,9 +62,9 @@ export const shouldBattle = (): void => {
       await expect(movesArrFromBattleInfoStruct[1]).to.equal(userInput[1]);
     });
 
-    xit(`should propperly evaluate 'moves'.`, async function () {
+    it(`should propperly evaluate 'moves'.`, async function () {
       const userInput1 = [0, 1];
-      const userInput2 = [2, 1];
+      const userInput2 = [3, 0];
       const userInput3 = [2, 2];
 
       const battle1 = await this.battle
@@ -92,13 +92,9 @@ export const shouldBattle = (): void => {
       await this.battle._evaluateBattleMoves(2);
       await this.battle._evaluateBattleMoves(3);
 
-
-      const movesArrFromBattleInfoStruct = await this.battle
-      .getBattleMovesArr(1);
-
-      await expect(this.battle.getBattleResult(1)).to.equal("INITIATOR");
-      await expect(this.battle.getBattleResult(2)).to.equal("OPPONENT");
-      await expect(this.battle.getBattleResult(3)).to.equal("DRAW");
+      expect(await this.battle.getBattleResult(1)).to.equal("INITIATOR");
+      expect(await this.battle.getBattleResult(2)).to.equal("OPPONENT");
+      expect(await this.battle.getBattleResult(3)).to.equal("DRAW");
     });
   });
 };
