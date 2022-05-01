@@ -10,16 +10,20 @@ contract BattleDefinitions {
     address initator;
     address opponent;
     bool isComplete;
-    string initiatorMove;
-    string opponentMove;
+    uint8 initiatorMove;
+    uint8 opponentMove;
     string result;
   }
 
   // @notice This is the definition for the event to be emitted as a battle is initiated.
+  
   event NewBattleRecord(
     address indexed sender,
     address indexed opponent,
     uint256 indexed battleId
   );
 
+  // @notice All 'move' storage and evaluation will be based on the type uint8
+
+  enum MoveChoice { BITE, LEG, ARM }
 }

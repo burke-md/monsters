@@ -4,30 +4,24 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./utils/BattleDefinitions.sol";
+import "./utils/BattleData.sol";
+import "./utils/BattleGetters.sol";
 
-contract Battle is Ownable, BattleDefinitions {
+contract Battle is Ownable, BattleDefinitions, BattleData, BattleGetters {
 
   using Counters for Counters.Counter;
-  Counters.Counter private _battleId;
 
   // @notice The _isValidMoveInput function will insure that non-approved 'moves' are not input into the BattleInfo struct.
 
-  function _validateMoveInput(string memory move) internal pure returns (bool) {
-
+  function _validateMoveInput(uint8 move) internal pure returns (bool) {
     bool isValid = false;
-    bytes32 moveToByes = keccak256(bytes(move));
 
-    if(moveToByes == keccak256(bytes("ARM"))) isValid = true;
-    if(moveToByes == keccak256(bytes("LEG"))) isValid = true;
-    if(moveToByes == keccak256(bytes("BITE"))) isValid = true;
+    if(move >= 0) isValid = true;
+    if(move <= 2) isValid = true;
 
     return isValid;
   }
 
-  // @dev battleId => BattleInfo <see struct def>
-
-  mapping(uint256 => BattleInfo)
-    public battleHistory;
 
   // @notice The initiateBattle function is the first step in the battle mechanics. It simply stores and emits some data. There are no calculations made here.
 
@@ -40,8 +34,8 @@ contract Battle is Ownable, BattleDefinitions {
       initator: msg.sender,
       opponent: opponent,
       isComplete: false,
-      initiatorMove: "",
-      opponentMove: "",
+      initiatorMove: 3,
+      opponentMove: 3,
       result: ""
     });
 
@@ -52,62 +46,21 @@ contract Battle is Ownable, BattleDefinitions {
 
   // @notice The _defineBattleMoves function is the second step in the battle mechanics. It stores the two parties moves in the BattleInfo struct.
 
-  function _defineBattleMoves(uint256 battleId, string  memory initiatorMove, string memory opponentMove) public onlyOwner {
+  function _defineBattleMoves(uint256 battleId, uint8 initiatorMove, uint8 opponentMove) public onlyOwner {
+    
     require(_validateMoveInput(initiatorMove) == true, "Invalid initiator move definition.");
     require(_validateMoveInput(opponentMove) == true, "Invalid opponent move definition.");
+    
 
     battleHistory[battleId].initiatorMove = initiatorMove;
     battleHistory[battleId].opponentMove = opponentMove;
   }
 
+
   function _evaluateBattleMoves(uint256 battleId) public onlyOwner {
 
   }
-
-  // @notice The getNumBattleRecords funtion is a simple getter funtion for testing the auto incrementing value for battleId.
-
-  // @returns uint256 battleId of most recent initiated battle.
-
-  function getNumBattleRecords () public view returns(uint256) {
-    return _battleId.current();
-  }
-
-  //========================================================//
-  //========================GETTERS=========================//
-
-  // @notice The getBattleCompletionState function is a simple getter function that returns if a battle has been completed or not.
-
-  // @returns bool This value will be false until all calculations are complete and values are updated as nessisary. 
-
-  function getBattleCompletionState (uint256 battleId) public view returns (bool) {
-    return battleHistory[battleId].isComplete;
-  }
-
-  // @notice The getBattleMovesArr function is a simple getter function.
-
-  // @returns array of strings [initiatorMove, opponentMove].
-  function getBattleMovesArr (uint256 battleId) public view returns (string[] memory) {
-
-    string[] memory moves = new string[](2);
-
-    moves[0] = battleHistory[battleId].initiatorMove;
-    moves[1] = battleHistory[battleId].opponentMove;
-
-    return moves;
-  }
-
-  // @notice The getBattleResult function is a simple getter function.
-
-  // @returns string(initator, opponent, draw).
-  function getBattleResult (uint256 battleId) public view returns (string memory) {
-    return battleHistory[battleId].result;
-  }
-}
-
-
-
-
-/* TODO
+  /* TODO
 X counter for battle
 X create new battle, w/ 2x address and battle id
 X emit event
@@ -120,3 +73,4 @@ X require moved to be of acceptable type
 -refactor for modularity etc.
 - Resolve "blind move" issue.
 */
+}
