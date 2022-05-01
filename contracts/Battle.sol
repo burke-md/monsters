@@ -56,37 +56,24 @@ contract Battle is Ownable, BattleDefinitions, BattleData, BattleGetters {
     battleHistory[battleId].opponentMove = opponentMove;
   }
 
-  // @notice
-  function _evaluateBattleMoves(uint256 battleId) public onlyOwner returns(bool) {
+  // @notice The _evaluateBattleMoves function is the third step in the battle mechanics. It discovers which party has won the single move battle and updates the BattleInfo struct.
 
-    bool isEvaluationError = true;
+  function _evaluateBattleMoves(uint256 battleId) public onlyOwner  {
 
+    string memory result;
     uint8 initiatorMove = battleHistory[battleId].initiatorMove;
     uint8 opponentMove =  battleHistory[battleId].opponentMove;
 
-    if (initiatorMove == opponentMove) {
-      battleHistory[battleId].result = "DRAW";
-
-      isEvaluationError = false;
-      return isEvaluationError;
-    }
-
+    if (initiatorMove == opponentMove) result = "DRAW";
     if (initiatorMove < opponentMove && 
-      opponentMove != 0) {
-      battleHistory[battleId].result = "INITIATOR";
+      opponentMove != 0) result = "INITIATOR";
+    if (initiatorMove > opponentMove) result = "OPPONENT";
 
-      isEvaluationError = false;
-      return isEvaluationError;
-    } 
+    battleHistory[battleId].result = result;
+  }
 
-    if (initiatorMove > opponentMove) {
-      battleHistory[battleId].result = "OPPONENT";
+  function _updateBattleInfoResult(string memory result) internal {
 
-      isEvaluationError = false;
-      return isEvaluationError;
-    }
-
-    return isEvaluationError;
   }
 
 
@@ -98,7 +85,7 @@ X store moved in battle struct?
 X function for inputting "moves"
 X require moved to be of acceptable type
 X calculate winner
--update battle record
+X update battle record
 -adjust winner/looser ELO score
 -refactor for modularity etc.
 - Resolve "blind move" issue.
