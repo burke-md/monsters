@@ -28,9 +28,9 @@ contract BattleGetters is BattleData {
 
   // @returns array of strings [initiatorMove, opponentMove].
 
-  function getBattleMovesArr (uint256 battleId) public view returns (string[] memory) {
+  function getBattleMovesArr (uint256 battleId) public view returns (uint8[] memory) {
 
-    string[] memory moves = new string[](2);
+    uint8[] memory moves = new uint8[](2);
 
     moves[0] = battleHistory[battleId].initiatorMove;
     moves[1] = battleHistory[battleId].opponentMove;

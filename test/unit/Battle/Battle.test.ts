@@ -46,7 +46,7 @@ export const shouldBattle = (): void => {
     });
 
     it(`should insert 'moves' into the appropriate BattleInfo stuct.`, async function () {
-      const userInput = ["LEG", "ARM"];
+      const userInput = [1, 2];
 
       const battle1 = await this.battle
       .connect(this.signers.alice)
@@ -63,9 +63,9 @@ export const shouldBattle = (): void => {
     });
 
     xit(`should propperly evaluate 'moves'.`, async function () {
-      const userInput1 = ["BITE", "LEG"];
-      const userInput2 = ["ARM", "LEG"];
-      const userInput3 = ["ARM", "ARM"];
+      const userInput1 = [0, 1];
+      const userInput2 = [2, 1];
+      const userInput3 = [2, 2];
 
       const battle1 = await this.battle
       .connect(this.signers.alice)

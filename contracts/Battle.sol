@@ -10,17 +10,14 @@ import "./utils/BattleGetters.sol";
 contract Battle is Ownable, BattleDefinitions, BattleData, BattleGetters {
 
   using Counters for Counters.Counter;
-  
+
   // @notice The _isValidMoveInput function will insure that non-approved 'moves' are not input into the BattleInfo struct.
 
-  function _validateMoveInput(string memory move) internal pure returns (bool) {
-
+  function _validateMoveInput(uint8 move) internal pure returns (bool) {
     bool isValid = false;
-    bytes32 moveToByes = keccak256(bytes(move));
 
-    if(moveToByes == keccak256(bytes("ARM"))) isValid = true;
-    if(moveToByes == keccak256(bytes("LEG"))) isValid = true;
-    if(moveToByes == keccak256(bytes("BITE"))) isValid = true;
+    if(move >= 0) isValid = true;
+    if(move <= 2) isValid = true;
 
     return isValid;
   }
@@ -37,8 +34,8 @@ contract Battle is Ownable, BattleDefinitions, BattleData, BattleGetters {
       initator: msg.sender,
       opponent: opponent,
       isComplete: false,
-      initiatorMove: "",
-      opponentMove: "",
+      initiatorMove: 3,
+      opponentMove: 3,
       result: ""
     });
 
@@ -49,23 +46,21 @@ contract Battle is Ownable, BattleDefinitions, BattleData, BattleGetters {
 
   // @notice The _defineBattleMoves function is the second step in the battle mechanics. It stores the two parties moves in the BattleInfo struct.
 
-  function _defineBattleMoves(uint256 battleId, string  memory initiatorMove, string memory opponentMove) public onlyOwner {
+  function _defineBattleMoves(uint256 battleId, uint8 initiatorMove, uint8 opponentMove) public onlyOwner {
+    
     require(_validateMoveInput(initiatorMove) == true, "Invalid initiator move definition.");
     require(_validateMoveInput(opponentMove) == true, "Invalid opponent move definition.");
+    
 
     battleHistory[battleId].initiatorMove = initiatorMove;
     battleHistory[battleId].opponentMove = opponentMove;
   }
 
+
   function _evaluateBattleMoves(uint256 battleId) public onlyOwner {
 
   }
-}
-
-
-
-
-/* TODO
+  /* TODO
 X counter for battle
 X create new battle, w/ 2x address and battle id
 X emit event
@@ -78,3 +73,4 @@ X require moved to be of acceptable type
 -refactor for modularity etc.
 - Resolve "blind move" issue.
 */
+}
