@@ -34,6 +34,23 @@ export const shouldBattle = (): void => {
       ).to.emit(this.battle, `NewBattleRecord`);
     });
 
+    it(`should emit 'CompletedEvaluation' after a battle has been evaluated.`, async function () {
+      const userInput1 = [0, 1];
+
+      const battle1 = await this.battle
+      .connect(this.signers.alice)
+      .initiateBattle(this.signers.bob.address);
+
+      await this.battle
+      ._defineBattleMoves(1, userInput1[0], userInput1[1]);
+
+      await this.battle._evaluateBattleMoves(1);
+
+      await expect(
+        await this.battle._evaluateBattleMoves(1)
+      ).to.emit(this.battle, `CompletedEvaluation`);
+    });
+
     it(`should report each battle isComplete as false after initiation.`, async function () {
       const battle1 = await this.battle
       .connect(this.signers.alice)
