@@ -15,12 +15,21 @@ contract BattleDefinitions {
     string result;
   }
 
-  // @notice This is the definition for the event to be emitted as a battle is initiated.
+  // @notice NewBattleRecord is the definition for the event to be emitted as a battle is initiated.
   
-  event NewBattleRecord(
-    address indexed sender,
-    address indexed opponent,
-    uint256 indexed battleId
+  event NewBattleRecord (
+    uint256 indexed battleId,
+    address sender,
+    address opponent
+  );
+
+  // @notice CompletedEvaluation is the definition for the event to be emitted after battle moves are evaluated (as the BattleInfo struct is updated).
+
+  event CompletedEvaluation (
+    uint256 indexed battleId,
+    string indexed result,
+    address initiator,
+    address opponent
   );
 
   // @notice All 'move' storage and evaluation will be based on the type uint8
