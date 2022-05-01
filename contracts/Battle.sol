@@ -56,10 +56,40 @@ contract Battle is Ownable, BattleDefinitions, BattleData, BattleGetters {
     battleHistory[battleId].opponentMove = opponentMove;
   }
 
+  // @notice
+  function _evaluateBattleMoves(uint256 battleId) public onlyOwner returns(bool) {
 
-  function _evaluateBattleMoves(uint256 battleId) public onlyOwner {
+    bool isEvaluationError = true;
 
+    uint8 initiatorMove = battleHistory[battleId].initiatorMove;
+    uint8 opponentMove =  battleHistory[battleId].opponentMove;
+
+    if (initiatorMove == opponentMove) {
+      battleHistory[battleId].result = "DRAW";
+
+      isEvaluationError = false;
+      return isEvaluationError;
+    }
+
+    if (initiatorMove < opponentMove && 
+      opponentMove != 0) {
+      battleHistory[battleId].result = "INITIATOR";
+
+      isEvaluationError = false;
+      return isEvaluationError;
+    } 
+
+    if (initiatorMove > opponentMove) {
+      battleHistory[battleId].result = "OPPONENT";
+
+      isEvaluationError = false;
+      return isEvaluationError;
+    }
+
+    return isEvaluationError;
   }
+
+
   /* TODO
 X counter for battle
 X create new battle, w/ 2x address and battle id
@@ -67,10 +97,11 @@ X emit event
 X store moved in battle struct?
 X function for inputting "moves"
 X require moved to be of acceptable type
--calculate winner
+X calculate winner
 -update battle record
 -adjust winner/looser ELO score
 -refactor for modularity etc.
 - Resolve "blind move" issue.
+- Review function access modifiers
 */
 }
