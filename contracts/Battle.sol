@@ -85,8 +85,8 @@ X require moved to be of acceptable type
 X calculate winner
 X update battle record
 -adjust winner/looser ELO score
--refactor for modularity etc.
 - Resolve "blind move" issue.
+-refactor for modularity etc.
 - Review function access modifiers
 */
 }
