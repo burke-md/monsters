@@ -77,27 +77,50 @@ contract Battle is Ownable, BattleDefinitions, BattleData, BattleGetters, Battle
     emit CompletedEvaluation(battleId, result, initiator, opponent);
   }
 
+
+
   // @dev Consider reordering these functions.
 
   // @notice The _updateMonsterElo function is fifth step in the battle mechanics. 
-  // It will update the onchain data pertaining to each monster. Somewhat akin to an xp value.
+  // It will update the onchain ELO data pertaining to each monster. Somewhat akin to an xp value.
 
-  // @param points should be within the range of 1-5 (inclusive). Where 3 is neutral, a draw.
-  // 5 would assign two wins to the opponent, while 1 would assign two wins to the initiator 
+  /* @param 'points' should be within the range of 1-5 (inclusive). 
+  * Where 3 is neutral, a draw.
+  * 5 would assign two wins to the opponent, while 1 would assign two 
+  * wins to the initiator 
+  *
+  * INITIATOR 2 wins <-- 1 win <-- draw --> 1 win --> 2 wins OPPONENT
+  */
 
-  function _updateMonsterElo(address initiator, address opponent, uint8 points) internal pure{
+  function _evaluateMonsterElo(address initiator, address opponent, uint8 points, uint256 battleId) internal {
     require(_validateEloPoints(points), "Invalid data. Cannot update ELO values.");
 
-    //Calculate
+    string memory outcome;
+    uint8 eloIncrease;
 
-    //handle access to monsters contract
+    if (points == 3) {
+      outcome = "DRAW";
+      eloIncrease = 0;
+    }
 
-    //update both monsters
+    if (points > 3) {
+      outcome = "OPPONENT";
+      eloIncrease = (points - 3) *  ELO_POINTS_PER_WIN;
+      _updateMonsterElo(opponent, eloIncrease);
+    }
 
-    //emit event
+    if (points < 3) {
+      outcome = "INITIATOR";
+      eloIncrease = (3 - points) *  ELO_POINTS_PER_WIN;
+      _updateMonsterElo(initiator, eloIncrease);
+    }
+
+    emit EloUpdate(battleId, outcome, eloIncrease);
   }
 
-
+  function _updateMonsterElo(address monster, uint8 eloIncrease) internal {
+    //handle access to monsters contract
+  }
 
   /* TODO
 X counter for battle

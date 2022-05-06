@@ -12,7 +12,12 @@ contract BattleValidators {
     return isValid;
   }
 
+  // @notice The _validateEloPoints function will insure that only points within the expected range are passed into _updateMonsterElo function.
   function _validateEloPoints(uint8 points) internal pure returns (bool){
+    bool isValid = false;
 
+      if (points >= 1 && points <= 5) isValid = true;
+
+    return isValid;
   }
 }
