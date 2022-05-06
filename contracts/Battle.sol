@@ -85,8 +85,11 @@ contract Battle is Ownable, BattleDefinitions, BattleData, BattleGetters, Battle
   // @param points should be within the range of 1-5 (inclusive). Where 3 is neutral, a draw.
   // 5 would assign two wins to the opponent, while 1 would assign two wins to the initiator 
 
-  function _updateMonsterElo(address initiator, address opponent, uint8 points) internal pure{
+  function _updateMonsterElo(address initiator, address opponent, uint8 points) internal {
     require(_validateEloPoints(points), "Invalid data. Cannot update ELO values.");
+
+    address winner;
+    uint8 eloIncrease;
 
     //Calculate
 
@@ -95,6 +98,7 @@ contract Battle is Ownable, BattleDefinitions, BattleData, BattleGetters, Battle
     //update both monsters
 
     //emit event
+    emit EloUpdate(winner, eloIncrease);
   }
 
 
