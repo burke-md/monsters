@@ -34,7 +34,8 @@ contract BattleDefinitions {
 
   // @notice EloUpdate is the definition for the event to be emitted after a battle is complete and both monsters have been updated. 
   event EloUpdate (
-    address indexed winner,
+    uint256 indexed battleId,
+    string winner,
     uint8 eloIncrease
   );
 
