@@ -2,33 +2,14 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-<<<<<<< HEAD
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-
-//->Inherit imported libs
-contract Monster is ERC721, Pausable, Ownable {
-
-  constructor() ERC721("Monster", "MON") {}
-=======
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
->>>>>>> db1414ba4578f18db58f8ef9183b54ea6ca40279
 
-contract Monster is ERC721,ERC721Pausable,ERC721Burnable,ERC721URIStorage,Ownable,Counters {
+contract Monster is ERC721, ERC721Pausable, ERC721Burnable, ERC721URIStorage, Ownable {
 
-<<<<<<< HEAD
-//->Create mapping of addresses and tokenId
-
-
-  function pause() public onlyOwner {
-    _pause();
-  }
-
-=======
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
 
@@ -36,7 +17,7 @@ contract Monster is ERC721,ERC721Pausable,ERC721Burnable,ERC721URIStorage,Ownabl
   uint maxSupply = 1000;
   uint randNumModulus = 10 ** 12;
 
-  constructor () public ERC721("Monster", "MON") {} 
+  constructor () ERC721("Monster", "MON") {} 
 
   mapping (uint => address) IdToAddress;
   mapping (uint => uint) IdToElo;
@@ -47,13 +28,12 @@ contract Monster is ERC721,ERC721Pausable,ERC721Burnable,ERC721URIStorage,Ownabl
   function pause() public onlyOwner {
     _pause();
   }
->>>>>>> db1414ba4578f18db58f8ef9183b54ea6ca40279
 
   function unpause() public onlyOwner {
     _unpause();
   }
 
-   function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal whenNotPaused override {
+   function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal whenNotPaused override (ERC721, ERC721Pausable){
     super._beforeTokenTransfer(from, to, tokenId);
   }
 
@@ -63,11 +43,11 @@ contract Monster is ERC721,ERC721Pausable,ERC721Burnable,ERC721URIStorage,Ownabl
   function _generateRandNum() internal returns(uint){
   
     // call vrf
-    vrfFeeEth = SafeMathChainlink.mul(currentPrice();
+    //vrfFeeEth = SafeMathChainlink.mul(currentPrice());
 
-    uint randNum = vrf();
+    //uint randNum = vrf();
     // need to find what the vrf function syntax is
-    return randNum % randNumModulus;
+    //return randNum % randNumModulus;
   }
 
 
@@ -94,13 +74,13 @@ contract Monster is ERC721,ERC721Pausable,ERC721Burnable,ERC721URIStorage,Ownabl
 
   function _mintMonster() public payable whenNotPaused {
     
-    require(_tokenIdCounter + 1 < maxSupply);
-    require(_mintPrice + _vrfFeeEth <= msg.value, "Ether value sent is not correct") 
+    require((_tokenIdCounter.current() + 1) <= maxSupply, "Monsters: Mint would exceed maxSupply");
+    //require(_mintPrice + _vrfFeeEth <= msg.value, "Ether value sent is not correct");
 
     uint startingElo = 600;
     uint newTokenId = _GenerateNewTokenId();
 
-    _safeMint(msg.sender, tokenId);
+    //_safeMint(msg.sender, tokenId);
 
     _tokenIdCounter.increment();
     IdToAddress[newTokenId] = msg.sender;
@@ -113,7 +93,9 @@ contract Monster is ERC721,ERC721Pausable,ERC721Burnable,ERC721URIStorage,Ownabl
 
 
 
-function _burn(uint256 tokenId) internal Override(ERC721, ERC721Storage) {
+function _burn(uint256 tokenId) 
+  internal 
+  override (ERC721, ERC721URIStorage) {
     super._burn(tokenId);
   }
 
@@ -125,7 +107,7 @@ set URI
   function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage)
     returns (string memory)
   {
-    return super.tokenURI(tokenID)
+    return super.tokenURI(tokenId);
   }
 
 }
