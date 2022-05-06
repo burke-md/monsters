@@ -2,33 +2,14 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-<<<<<<< HEAD
-import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-
-//->Inherit imported libs
-contract Monster is ERC721, Pausable, Ownable {
-
-  constructor() ERC721("Monster", "MON") {}
-=======
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
->>>>>>> db1414ba4578f18db58f8ef9183b54ea6ca40279
 
 contract Monster is ERC721,ERC721Pausable,ERC721Burnable,ERC721URIStorage,Ownable,Counters {
 
-<<<<<<< HEAD
-//->Create mapping of addresses and tokenId
-
-
-  function pause() public onlyOwner {
-    _pause();
-  }
-
-=======
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
 
@@ -47,7 +28,6 @@ contract Monster is ERC721,ERC721Pausable,ERC721Burnable,ERC721URIStorage,Ownabl
   function pause() public onlyOwner {
     _pause();
   }
->>>>>>> db1414ba4578f18db58f8ef9183b54ea6ca40279
 
   function unpause() public onlyOwner {
     _unpause();
