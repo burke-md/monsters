@@ -7,9 +7,12 @@ contract BattleValidators {
   function _validateMoveInput(uint8 move) internal pure returns (bool) {
     bool isValid = false;
 
-    if(move >= 0) isValid = true;
-    if(move <= 2) isValid = true;
+    if(move >= 0 && move <= 2) isValid = true;
 
     return isValid;
+  }
+
+  function _validateEloPoints(uint8 points) internal pure returns (bool){
+
   }
 }
