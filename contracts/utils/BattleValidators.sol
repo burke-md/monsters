@@ -11,4 +11,8 @@ contract BattleValidators {
 
     return isValid;
   }
+
+  function _validateEloPoints(uint8 points) internal pure returns (bool){
+
+  }
 }

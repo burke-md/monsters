@@ -46,7 +46,9 @@ contract Battle is Ownable, BattleDefinitions, BattleData, BattleGetters, Battle
     battleHistory[battleId].opponentMove = opponentMove;
   }
 
-  // @notice The _evaluateBattleMoves function is the third step in the battle mechanics. It discovers which party has won the single move battle. It then calls another function to update the BattleInfo struct and emit an event.
+  // @notice The _evaluateBattleMoves function is the third step in the battle mechanics. It 
+  // discovers which party has won the single move battle. It then calls another function to 
+  // update the BattleInfo struct and emit an event.
 
   function _evaluateBattleMoves(uint256 battleId) public onlyOwner  {
 
@@ -62,7 +64,8 @@ contract Battle is Ownable, BattleDefinitions, BattleData, BattleGetters, Battle
     _updateBattleInfoResult(result, battleId);
   }
 
-  // @notice The _updateBattleInfoResult function is the fourth step in the battle mechanics. It is called internally and will update the BattleInfo strucut, then emit an event.
+  // @notice The _updateBattleInfoResult function is the fourth step in the battle mechanics. 
+  // It is called internally and will update the BattleInfo strucut, then emit an event.
 
   function _updateBattleInfoResult(string memory result, uint256 battleId) internal {
 
@@ -73,6 +76,27 @@ contract Battle is Ownable, BattleDefinitions, BattleData, BattleGetters, Battle
 
     emit CompletedEvaluation(battleId, result, initiator, opponent);
   }
+
+  // @dev Consider reordering these functions.
+
+  // @notice The _updateMonsterElo function is fifth step in the battle mechanics. 
+  // It will update the onchain data pertaining to each monster. Somewhat akin to an xp value.
+
+  // @param points should be within the range of 1-5 (inclusive). Where 3 is neutral, a draw.
+  // 5 would assign two wins to the opponent, while 1 would assign two wins to the initiator 
+
+  function _updateMonsterElo(address initiator, address opponent, uint8 points) internal pure{
+    require(_validateEloPoints(points), "Invalid data. Cannot update ELO values.");
+
+    //Calculate
+
+    //handle access to monsters contract
+
+    //update both monsters
+
+    //emit event
+  }
+
 
 
   /* TODO

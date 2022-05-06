@@ -32,6 +32,9 @@ contract BattleDefinitions {
     address opponent
   );
 
+  // @notice EloUpdate is the definition for the event to be emitted after a battle is complete and both monsters have been updated. 
+  event EloUpdate ();
+
   // @notice All 'move' storage and evaluation will be based on the type uint8
 
   enum MoveChoice { BITE, LEG, ARM }
