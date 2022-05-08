@@ -7,6 +7,8 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
+
 
 interface Monster {
 
@@ -14,7 +16,12 @@ interface Monster {
 }
 
 
-contract Monster is ERC721, ERC721Pausable, ERC721Burnable, ERC721URIStorage, Ownable {
+contract Monster is ERC721, 
+    ERC721Pausable, 
+    ERC721Burnable, 
+    ERC721URIStorage, 
+    Ownable 
+    AccessControl {
 
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
@@ -22,12 +29,27 @@ contract Monster is ERC721, ERC721Pausable, ERC721Burnable, ERC721URIStorage, Ow
   uint mintPrice = 0.05 ether;
   uint maxSupply = 1000;
   uint randNumModulus = 10 ** 12;
+  address battleContract address;
 
   constructor () ERC721("Monster", "MON") {} 
 
   mapping (uint => uint) IdToElo;
 
   event NewMonster(uint monsterId, uint Elo);
+
+  modifier onlyBattle {
+    _;
+  }
+
+  /**
+  *
+  * @dev SetBattleContract will be used to insert the contract address, which 
+  * will only be known after deployment.
+  *
+  */
+  function setBattleContractAdress(address contractAddress)  public onlyOwner {
+  
+  }
 
   function pause() public onlyOwner {
     _pause();
