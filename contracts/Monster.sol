@@ -8,6 +8,12 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
+interface Monster {
+
+  function _updateElo(address monster, uint8 points) external onlyBatle;
+}
+
+
 contract Monster is ERC721, ERC721Pausable, ERC721Burnable, ERC721URIStorage, Ownable {
 
   using Counters for Counters.Counter;
@@ -19,9 +25,7 @@ contract Monster is ERC721, ERC721Pausable, ERC721Burnable, ERC721URIStorage, Ow
 
   constructor () ERC721("Monster", "MON") {} 
 
-  mapping (uint => address) IdToAddress;
   mapping (uint => uint) IdToElo;
-  mapping (uint => bool) IdMinted; // default: false
 
   event NewMonster(uint monsterId, uint Elo);
 
@@ -72,9 +76,10 @@ contract Monster is ERC721, ERC721Pausable, ERC721Burnable, ERC721URIStorage, Ow
 
 
 
-  function _mintMonster() public payable whenNotPaused {
+  function mintMonster() public payable whenNotPaused {
     
-    require((_tokenIdCounter.current() + 1) <= maxSupply, "Monsters: Mint would exceed maxSupply");
+    require((_tokenIdCounter.current() + 1) <= maxSupply,
+            "Monsters: Mint would exceed maxSupply");
     //require(_mintPrice + _vrfFeeEth <= msg.value, "Ether value sent is not correct");
 
     uint startingElo = 600;
@@ -104,10 +109,32 @@ function _burn(uint256 tokenId)
 set URI
 */
 
-  function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage)
-    returns (string memory)
-  {
-    return super.tokenURI(tokenId);
+  function tokenURI(uint256 tokenId) 
+    public 
+    view 
+    override(ERC721, ERC721URIStorage)
+    returns (string memory){
+       return super.tokenURI(tokenId);
+  }
+
+  /**
+  *
+  * @notice The _updateElo  function will be made available via the interface. 
+  * It will be called after a battle is resolved to add points to the winner.
+  * At this time ELO points will ONLY increment. There is not decrement 
+  * functionalit 
+  *
+  * @requires _updateElo can only be called by the Battle contract. 
+  *
+  */
+
+  function _updateElo(address monster, uint8 points) external onlyBattle {
+
   }
 
 }
+
+
+
+
+
