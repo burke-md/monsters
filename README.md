@@ -1,5 +1,32 @@
 # Monsters
+
 This is a project for the Chainlink Hackathon 2022
+
+
+## The battle contract
+
+The following are the major steps involved in each battle. There are several 
+helper functions omitted for simplicity of explaining the process.
+
+
+- initiateBattle --This will be called publically by the "initiator", naming 
+    the "opponent". This creates a record of the battle without entering and
+    specific information.
+
+- _defineBattleMoves --This enters actually moved into the previously empty 
+    battle record.
+
+- _evaluateBattleMoves --This function determins the outcome and calls another
+    function : _updateBattleInfoResult
+
+- _updateBattleInfoResult --This enters the "result" of the battle into the 
+    record that was created at the begining of this sequence.
+
+- _evaluateMonsterElo --This determins how many points to give to the winning
+    monster. Somewhat akin to XP, it will only increment positively. 
+
+- _updateWinner --This calls a function in the Monster contract updating the 
+    ELO points mapped to each monsters token ID.
 
 ## Working with this repo
 
