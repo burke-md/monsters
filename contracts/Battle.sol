@@ -30,14 +30,39 @@ contract Battle is Ownable,
             initator: msg.sender,
             opponent: opponent,
             isComplete: false,
-            initiatorMove: 3,
-            opponentMove: 3,
+            initiatorMovesHash: null,
+            opponentMovesHash: null,
+            initiatorMovesArr: [],
+            opponentMovesArr: [],
             result: ""
         });
 
         battleHistory[_battleId.current()] = battleSet;
 
-        emit NewBattleRecord(_battleId.current(), msg.sender, opponent);
+        emit NewBattleRecord(_battleId.current(), 
+                             msg.sender, 
+                             opponent);
+    }
+
+    /** @notice commitBattleMovesHash is a function that each competitor will
+    *   call for themselves. This is the begining of the comit/reveal pattern.
+    *
+    *   STEP 1:
+    *       The front end will hash an array of moves and a secret pass phrase.
+    *   STEP2:
+    *       Calling this function, the hash will be stored on chain.
+    *   STEP3:
+    *       After the second hash is stored an event will be emitted.
+    *   STEP4:
+    *       User will re-enter their moves array and pass phrase. These will be
+    *       hashed on chain. If the two hashes match, the moved will be valid.
+    *       The outcome will be calculated and ELO points awarded. 
+    *
+    */
+    function commitBattleMovesHash(uint256 battleId, bytes32 movesHash) public {
+        require(_validateBattleParticipant(battleId, msg.sender), 
+                "BATTLE: You are not a participant in this battle.");
+        require(, "BATTLE: Your moves hash has already been commited.");
     }
 
     /** @notice The _defineBattleMoves function is the second step in the 
