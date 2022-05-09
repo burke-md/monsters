@@ -62,7 +62,11 @@ contract Battle is Ownable,
     function commitBattleMovesHash(uint256 battleId, bytes32 movesHash) public {
         require(_validateBattleParticipant(battleId, msg.sender), 
                 "BATTLE: You are not a participant in this battle.");
-        require(, "BATTLE: Your moves hash has already been commited.");
+        require(_validateBattleHashRequired(battleId, msg.sender), 
+                "BATTLE: Your moves hash has already been commited.");
+        //store data
+        //define and emit even
+        //then create getter 
     }
 
     /** @notice The _defineBattleMoves function is the second step in the 

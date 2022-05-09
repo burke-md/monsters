@@ -10,9 +10,12 @@ helper functions omitted for simplicity of explaining the process.
 
 
 - initiateBattle --This will be called publically by the "initiator", naming 
-    the "opponent". This creates a record of the battle without entering and
+    the "opponent". This creates a record of the battle without entering any 
     specific information.
 
+- commitBattleMovesHash -- This will be called by individual players to commit 
+    hashed moves array. See instructions for this.
+    
 - _defineBattleMoves --This enters actually moved into the previously empty 
     battle record.
 

@@ -42,5 +42,26 @@ contract BattleValidators is BattleData {
 
             return false;
     }
-    
+
+    /** @notice _validateBattleHashRequired is a quick check to ensure this 
+    *   data is only entered once and is never overwritten.
+    */
+    function _validateBattleHashRequired(uint256 battleId, address participant)
+        internal
+        pure
+        returns (bool) {
+            
+            if (battleHistory[battleId].initiator == participant &&
+                battleHistory[battleId].initiatorMovesHash == null) {
+                return true;
+            }
+
+             
+            if (battleHistory[battleId].opponent == participant &&
+                battleHistory[battleId].opponentMovesHash == null) {
+                return true;
+            }
+
+            return false;
+        }
 }
