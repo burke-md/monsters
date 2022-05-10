@@ -77,8 +77,6 @@ contract Battle is Ownable,
            battleHistory[battleId].initiatorMovesHash != null) {
             emit BattleHashesCommit(battleId);
         } 
-        
-        //then create getter 
     }
 
     /** @notice The _defineBattleMoves function is the second step in the 

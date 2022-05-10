@@ -28,21 +28,34 @@ contract BattleGetters is BattleData {
 
   // @returns array of strings [initiatorMove, opponentMove].
 
-  function getBattleMovesArr (uint256 battleId) public view returns (uint8[] memory) {
+    function getBattleMovesArr (
+        uint256 battleId) 
+        public 
+        view 
+        returns (uint8[] memory) {
 
-    uint8[] memory moves = new uint8[](2);
+        uint8[] memory moves = new uint8[](2);
 
-    moves[0] = battleHistory[battleId].initiatorMove;
-    moves[1] = battleHistory[battleId].opponentMove;
+        moves[0] = battleHistory[battleId].initiatorMove;
+        moves[1] = battleHistory[battleId].opponentMove;
 
-    return moves;
-  }
+        return moves;
+    }
 
-  // @notice The getBattleResult function is a simple getter function.
+    /** @notice The getBattleResult function is a simple getter function.
+    *
+    *   @returns string(initator, opponent, draw).
+    */
+    function getBattleResult (uint256 battleId) public view returns (string memory) {
+        return battleHistory[battleId].result;
+    }
 
-  // @returns string(initator, opponent, draw).
-  
-  function getBattleResult (uint256 battleId) public view returns (string memory) {
-    return battleHistory[battleId].result;
-  }
+    /** @notice getMovesHashCommited returns a boolean value. It will confirm
+    *   if BOTH participants have commited their moves hash.
+    */
+    function getMovesHashCommited (uint battleId) public view returns (bool) {
+
+        return (battleHistory[battleId].initiatorMovesHash != null &&
+                battleHistory[battleId].opponentMovesHash != null) 
+    }
 }
