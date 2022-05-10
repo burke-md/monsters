@@ -16,8 +16,8 @@ helper functions omitted for simplicity of explaining the process.
 - commitBattleMovesHash -- This will be called by individual players to commit 
     hashed moves array. See instructions for this.
     
-- _defineBattleMoves --This enters actually moved into the previously empty 
-    battle record.
+- revealBattleMoves --This validates, reveals and enters the moves into the 
+    battle record. The moves can now be viewed.
 
 - _evaluateBattleMoves --This function determins the outcome and calls another
     function : _updateBattleInfoResult
