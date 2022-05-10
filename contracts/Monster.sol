@@ -11,8 +11,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 
 
 interface Monster {
-
-  function _updateElo(address monster, uint8 points) external onlyBatle;
+    function _updateElo(address monster, uint8 points) external onlyBattle;
 }
 
 
@@ -29,7 +28,7 @@ contract Monster is ERC721,
   uint mintPrice = 0.05 ether;
   uint maxSupply = 1000;
   uint randNumModulus = 10 ** 12;
-  address battleContract address;
+  address battleContractAddress;
 
   constructor () ERC721("Monster", "MON") {} 
 
@@ -37,19 +36,24 @@ contract Monster is ERC721,
 
   event NewMonster(uint monsterId, uint Elo);
 
-  modifier onlyBattle {
-    _;
-  }
+    modifier onlyBattle {
+        require(msg.sender == battleContractAddress,
+                "MONSTER: Confirm battle address has been set by owner and that
+                this function is only being called from the Battle contract.");
+        _;
+    }
 
-  /**
-  *
-  * @dev SetBattleContract will be used to insert the contract address, which 
-  * will only be known after deployment.
-  *
-  */
-  function setBattleContractAdress(address contractAddress)  public onlyOwner {
-  
-  }
+    /**
+    * @dev SetBattleContract will be used to update the contract address, 
+    * which will only be known after deployment.
+    *
+    */
+    function setBattleContractAdress(
+        address contractAddress)  
+        public onlyOwner {
+
+        battleContractAddress = contractAddress;
+    }
 
   function pause() public onlyOwner {
     _pause();
@@ -140,11 +144,10 @@ set URI
   }
 
   /**
-  *
   * @notice The _updateElo  function will be made available via the interface. 
   * It will be called after a battle is resolved to add points to the winner.
   * At this time ELO points will ONLY increment. There is not decrement 
-  * functionalit 
+  * functionality.
   *
   * @requires _updateElo can only be called by the Battle contract. 
   *

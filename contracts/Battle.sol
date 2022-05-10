@@ -9,6 +9,8 @@ import "./utils/BattleData.sol";
 import "./utils/BattleGetters.sol";
 import "./utils/BattleValidators.sol";
 
+import "./Monster.sol";
+
 contract Battle is Ownable, 
     BattleDefinitions, 
     BattleData, 
@@ -209,11 +211,12 @@ contract Battle is Ownable,
         emit EloUpdate(battleId, outcome, eloIncrease);
     }
 
-    /** @notice
-    *
+    /** @notice _updateWinner will call a function within the Monster contract
+    *   to update the monster's ELO score (on chain data point).
     */
     function _updateWinner(address monster, uint8 eloIncrease) internal {
-    //handle access to monsters contract
+        Monster monster = Monster(monster, eloIncrease);
+        monster();
     }
 
   /** TODO
@@ -225,9 +228,9 @@ X function for inputting "moves"
 X require moved to be of acceptable type
 X calculate winner
 X update battle record
--adjust winner/looser ELO score
+X adjust winner/looser ELO score
 -prevent multiple battles
-- Resolve "blind move" issue.
+X  Resolve "blind move" issue.
 -refactor for modularity etc.
 - Review function access modifiers
 */
