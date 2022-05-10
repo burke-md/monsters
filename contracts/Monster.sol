@@ -10,42 +10,48 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
+import "./utils/MonsterHelpers.sol";
+import "./utils/MonsterValidators.sol";
+import "./utils/UnmintedMonsters.sol";
+
 
 interface Monster {
 
-  function _updateElo(address monster, uint8 points) external onlyBatle;
+  function _updateElo(address monster, uint8 points) external onlyBattle;
 }
-
 
 contract Monster is ERC721, 
     ERC721Pausable, 
     ERC721Burnable, 
     ERC721URIStorage, 
-    Ownable 
-    AccessControl {
-
-//->using statment for Counters
-//->create private counter na
+    Ownable, 
+    AccessControl,
+    MonsterHelpers,
+    MonsterValidators,
+    UnmintedMonsters {
  
 
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIdCounter;
-    // Counters.Counter is a pre-defined struct variable format, we're defining one Counters.counter called _tokenIdCounter
 
   uint mintPrice = 0.05 ether;
-  uint maxSupply = 1000;
+  uint maxSupply = 10;
   uint randNumModulus = 10 ** 12;
   address battleContract address;
 
-  constructor () ERC721("Monster", "MON") {} 
+  uint256[] internal unmintedMonsters;
 
   mapping (uint => uint) IdToElo;
 
   event NewMonster(uint monsterId, uint Elo);
 
-  modifier onlyBattle {
-    _;
-  }
+  constructor () ERC721("Monster", "MON") {
+
+    for (uint256 i = 0; i < maxSupply; i++) {
+      unmintedMonsters.push(i+1); // index #0 in array will contain unmintedMonster #1 etc.
+    }
+  } 
+
 
   /**
   *
@@ -53,18 +59,7 @@ contract Monster is ERC721,
   * will only be known after deployment.
   *
   */
-  function setBattleContractAdress(address contractAddress)  public onlyOwner {
-  
-  }
 
-  function pause() public onlyOwner {
-    _pause();
-  }
-
-//->create unpause func w/ onlyOwner modifyer (see above)
-  function unpause() public onlyOwner {
-    _unpause();
-  }
 
    function _beforeTokenTransfer(address from, address to, uint256 tokenId) internal whenNotPaused override (ERC721, ERC721Pausable){
     super._beforeTokenTransfer(from, to, tokenId);
@@ -82,25 +77,15 @@ contract Monster is ERC721,
   }
 
 
-
-
   function _GenerateNewTokenId() internal returns(uint) {
   
     uint randNum = _generateRandNum();
-    uint tokenId = (randNum / randNumModulus ) * (maxSupply); // range: 0 to (maxSupply - 1)
 
-    for (uint i = 0; i < maxSupply; i++) {
-      if (IdMinted[tokenId] = true) {
-        tokenId = tokenId++;
+    uint tokenIndex = (randNum / randNumModulus) * (unmintedMonsters.length); // range: 0 to (unmintedMonsters.length - 1)
+    uint tokenId = unmintedMonsters[tokenIndex];
 
-        if (tokenId >= maxSupply) {
-          tokenId = tokenId - maxSupply;
-        }
-      }
-    }
     return tokenId;
   }
-
 
 
   function mintMonster() public payable whenNotPaused {
@@ -112,74 +97,34 @@ contract Monster is ERC721,
     uint startingElo = 600;
     uint newTokenId = _GenerateNewTokenId();
 
-    //_safeMint(msg.sender, tokenId);
+    _safeMint(msg.sender, newTokenId);
 
     _tokenIdCounter.increment();
-    IdToAddress[newTokenId] = msg.sender;
     IdToElo[newTokenId] = startingElo;
-    IdMinted[newTokenId] = true;
+    removeUnmintedId(newTokenId - 1 - idCounter);
 
     emit NewMonster(newTokenId, IdToElo[newTokenId]);
   }
-
-
-
-  function _mintMonster(address _ownerAddress, uint _tokenId) internal onlyOwner {
-    
-    _ownerAddress = msg.sender;
-    _tokenId = _vrfToTokenId(_vrfNum);
-
-    _safeMint(_ownerAddress, _tokenId, _data);
-    _tokenIdCounter.increment();
-  }
-
-/*
-->Uncomment the following function 
-after pause/unpause implemented
 
   function _beforeTokenTransfer(address from, address to, uint256 tokenId)
   internal
   whenNotPaused
   override
   {
-    super._beforeTokenTransfer(from, to, toekId)
+    super._beforeTokenTransfer(from, to, tokenId)
   }
-*/
-
-//@Notice The following functions are overrides required to resolve conflict issues.
-
-//->Uncomment after libs are imported
-
-/*
-  function _burn(uint256 tokenId) internal Override(ERC721, ERC721Storage) {
-    super._burn(tokenId);
-  }
-
-  function tokenURI(uint256 tokeId)
-    public
-    view
-    override(ERC721, ERC721URIStorage)
-    returns (string memory)
-  {
-    return super.tokenURI(tokenID)
-function _burn(uint256 tokenId) 
-  internal 
-  override (ERC721, ERC721URIStorage) {
-    super._burn(tokenId);
-  }
-
 
 /*
 set URI
 */
 
-  function tokenURI(uint256 tokenId) 
-    public 
-    view 
-    override(ERC721, ERC721URIStorage)
-    returns (string memory){
-       return super.tokenURI(tokenId);
-  }
+  function _burn(uint256 tokenId) 
+    internal 
+    override 
+    (ERC721, ERC721URIStorage) 
+    {
+      super._burn(tokenId);
+    }
 
   /**
   *
@@ -193,7 +138,7 @@ set URI
   */
 
   function _updateElo(address monster, uint8 points) external onlyBattle {
-
+    
   }
 */
 }
