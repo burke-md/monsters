@@ -4,7 +4,7 @@ Pragma solidity ^0.8.4;
 
 contract BattleValidators{
 
-function setBattleContractAdress(address contractAddress)  public onlyOwner {
+function setBattleContractAddress(address contractAddress)  public onlyOwner {
   
   }
 
