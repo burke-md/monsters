@@ -64,8 +64,20 @@ contract Battle is Ownable,
                 "BATTLE: You are not a participant in this battle.");
         require(_validateBattleHashRequired(battleId, msg.sender), 
                 "BATTLE: Your moves hash has already been commited.");
-        //store data
-        //define and emit even
+        
+        if (msg.sender === battleHistory[battleId].initiator) {
+            battleHistory[battleId].initiatorMovesHash = movesHash;
+        }
+        
+        if (msg.sender === battleHistory[battleId].opponent) {
+            battleHistory[battleId].opponentMovesHash = movesHash;
+        }
+        
+        if (battleHistory[battleId].opponentMovesHash != null &&
+           battleHistory[battleId].initiatorMovesHash != null) {
+            emit BattleHashesCommit(battleId);
+        } 
+        
         //then create getter 
     }
 
