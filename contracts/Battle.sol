@@ -79,24 +79,50 @@ contract Battle is Ownable,
         } 
     }
 
-    /** @notice The _defineBattleMoves function is the second step in the 
-    *   battle mechanics. It stores the two parties moves in the BattleInfo 
-    *   struct.
+    /** @notice The revealBattleMoves function is the second step in the 
+    *   battle mechanics. It accepts an array of moves and a pass phrase,
+    *   validates the information and stores the confirmed moves array.
+    *   Each participant will have to call this function individually.
+    *
+    *   @params passPhrase is a string value. Used both client side in the 
+    *   creation of movesHash and in the revealBattleMoves function in this 
+    *   contract. 
+    *
+    *   @params movesArr is an integer array of moves to be evaluated against
+    *   the other participants moves.
     */
-    function _defineBattleMoves(
+    function revealBattleMoves(
         uint256 battleId, 
-        uint8 initiatorMove, 
-        uint8 opponentMove) 
-        public onlyOwner {
+        uint8[] memory movesArr,
+        string memory passPhrase
+        bytes32 movesHash) 
+        public {
     
-        require(_validateMoveInput(initiatorMove) == true, 
-                "Invalid initiator move definition.");
-        require(_validateMoveInput(opponentMove) == true, 
-                "Invalid opponent move definition.");
-    
+        require(_validateMoveInput(movesArr) == true, 
+                "BATTLE: Invalid move definition.");
+   
+        string memory participantPosition;
 
-        battleHistory[battleId].initiatorMove = initiatorMove;
-        battleHistory[battleId].opponentMove = opponentMove;
+        if (msg.sender == battleHistory[battleId].initiator) {
+            participantPosition = "INITIATOR";  
+        } else if (msg.sender == battleHistory[battleId].opponent) {
+            participantPosition == "OPPONENT";
+        }
+
+       //Insure validated moves array is stored under correct participant.  
+        if(_validateBattleMovesFromHash(
+            movesHash, passPhrase, movesArr) == true &&
+            participantPosition == "INITIATOR") {
+            
+            battleHistory[battleId].initiatorMovesArr = movesArr;
+        }
+
+            
+        if(_validateBattleMovesFromHash(
+            movesHash, passPhrase, movesArr) == true &&
+            participantPosition == "OPPONENT") {
+            
+            battleHistory[battleId].opponentMovesArr = movesArr;
     }
 
     /** @notice The _evaluateBattleMoves function is the third step in the 
