@@ -49,6 +49,11 @@ contract BattleDefinitions {
         uint8 eloIncrease
     );
 
+    /** @notice BattleHashedCommited will be emitted after both parties have 
+    *   locked in their hash of moves array and pass code.
+    */
+    event BattleHashesCommited(uint256 indexed battleId);
+
     /** @notice All 'move' storage and evaluation will be based on the type 
     *   uint8.
     */
