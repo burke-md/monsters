@@ -64,4 +64,15 @@ contract BattleValidators is BattleData {
 
             return false;
         }
+
+    /** @notice _validateBattleMovesFromHash is an integral validator that 
+    *   only the correct participant can reveal their moves array on chain.
+    */
+    function _validateBattleMovesFromHash(
+        bytes32 movesHash,
+        string memory passPhrase,
+        int[] memory movesArr) {
+
+            return (keccak256(passPhrase, movesArr) == movesHash);
+        }
 }
