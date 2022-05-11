@@ -5,7 +5,12 @@ contract BattleDefinitions {
     /** @notice The constant NULL has been created to cleanly define empty string value while testing state or initiating 
     *   bytes32/string fields.
      */
-    bytes32 constant NULL = "";
+    bytes32 constant NULL_BTS32 = "";
+
+     /** @notice The constant NULL_STR has been created to cleanly define empty string value while testing state or initiating 
+    *    string fields.
+     */
+    string constant NULL_STR = "";
 
     /** @notice This struct is used to store data regaurding each individual 
     *   battle and will be updated as needed.
@@ -13,7 +18,7 @@ contract BattleDefinitions {
 
     struct BattleInfo {
         uint256 id;
-        address initator;
+        address initiator;
         address opponent;
         bool isComplete;
         bytes32 initiatorMovesHash;

@@ -28,7 +28,7 @@ contract BattleGetters is BattleData {
 
     /** @notice The getBattleResult function is a simple getter function.
     *
-    *   @ returns string(initator, opponent, draw).
+    *   @ returns string(initiator, opponent, draw).
     */
     function getBattleResult (uint256 battleId) public view returns (string memory) {
         return battleHistory[battleId].result;

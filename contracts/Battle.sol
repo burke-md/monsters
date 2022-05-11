@@ -29,14 +29,14 @@ contract Battle is Ownable,
         BattleInfo memory battleSet;
         battleSet = BattleInfo({ 
             id: _battleId.current(),
-            initator: msg.sender,
+            initiator: msg.sender,
             opponent: opponent,
             isComplete: false,
-            initiatorMovesHash: NULL,
-            opponentMovesHash: NULL,
-            initiatorMovesArr: [],
-            opponentMovesArr: [],
-            result: NULL
+            initiatorMovesHash: NULL_BTS32,
+            opponentMovesHash: NULL_BTS32,
+            initiatorMovesArr: new uint8[](0),
+            opponentMovesArr: new uint8[](0),
+            result: NULL_STR
         });
 
         battleHistory[_battleId.current()] = battleSet;
@@ -77,7 +77,7 @@ contract Battle is Ownable,
         
         if (battleHistory[battleId].opponentMovesHash != NULL &&
            battleHistory[battleId].initiatorMovesHash != NULL) {
-            emit BattleHashesCommit(battleId);
+            emit BattleHashesCommited(battleId);(battleId);
         } 
     }
 
@@ -86,11 +86,11 @@ contract Battle is Ownable,
     *   validates the information and stores the confirmed moves array.
     *   Each participant will have to call this function individually.
     *
-    *   @params passPhrase is a string value. Used both client side in the 
+    *   @param passPhrase is a string value. Used both client side in the 
     *   creation of movesHash and in the revealBattleMoves function in this 
     *   contract. 
     *
-    *   @params movesArr is an integer array of moves to be evaluated against
+    *   @param movesArr is an integer array of moves to be evaluated against
     *   the other participants moves.
     */
     function revealBattleMoves(
@@ -172,7 +172,7 @@ contract Battle is Ownable,
     *   mechanics. It will update the onchain ELO data pertaining to each 
     *   monster. Somewhat akin to an xp value.
     *
-    *   @param 'points' should be within the range of 1-5 (inclusive). 
+    *   @param points should be within the range of 1-5 (inclusive). 
     *   Where 3 is neutral, a draw. 5 would assign two wins to the opponent, 
     *   while 1 would assign two wins to the initiator.
     *
@@ -200,13 +200,13 @@ contract Battle is Ownable,
         if (points > 3) {
             outcome = "OPPONENT"; 
             eloIncrease = (points - 3) *  ELO_POINTS_PER_WIN;
-            _updateMonsterElo(opponent, eloIncrease);
+            _updateWinner(opponent, eloIncrease);
         }
 
         if (points < 3) {
             outcome = "INITIATOR";
             eloIncrease = (3 - points) *  ELO_POINTS_PER_WIN;
-            _updateMonsterElo(initiator, eloIncrease);
+            _updateWinner(initiator, eloIncrease);
         }
 
         emit EloUpdate(battleId, outcome, eloIncrease);
@@ -215,8 +215,8 @@ contract Battle is Ownable,
     /** @notice _updateWinner will call a function within the Monster contract
     *   to update the monster's ELO score (on chain data point).
     */
-    function _updateWinner(address monster, uint8 eloIncrease) internal {
-        MonsterInterface monster = MonsterInterface(monster, eloIncrease);
+    function _updateWinner(uint256 monsterId, uint8 eloIncrease) internal {
+        MonsterInterface monster = MonsterInterface(monsterId, eloIncrease);
         monster();
     }
 

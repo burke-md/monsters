@@ -72,7 +72,8 @@ contract BattleValidators is BattleData {
     function _validateBattleMovesFromHash(
         bytes32 movesHash,
         string memory passPhrase,
-        int[] memory movesArr) {
+        int[] memory movesArr) 
+        internal {
 
             return (keccak256(passPhrase, movesArr) == movesHash);
         }
