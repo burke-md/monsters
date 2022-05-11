@@ -2,9 +2,11 @@
 pragma solidity ^0.8.4;
 
 contract BattleDefinitions {
-
+    /** @notice The constant NULL has been created to cleanly define empty string value while testing state or initiating 
+    *   bytes32/string fields.
+     */
     bytes32 constant NULL = "";
-    
+
     /** @notice This struct is used to store data regaurding each individual 
     *   battle and will be updated as needed.
     */

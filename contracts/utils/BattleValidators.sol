@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 import "./BattleData.sol"; 
+import "./BattleDefinitions.sol";
 
 contract BattleValidators is BattleData {
     /** @notice The _isValidMoveInput function will insure that non-approved 
@@ -52,13 +53,13 @@ contract BattleValidators is BattleData {
         returns (bool) {
             
             if (battleHistory[battleId].initiator == participant &&
-                battleHistory[battleId].initiatorMovesHash == null) {
+                battleHistory[battleId].initiatorMovesHash == NULL) {
                 return true;
             }
 
              
             if (battleHistory[battleId].opponent == participant &&
-                battleHistory[battleId].opponentMovesHash == null) {
+                battleHistory[battleId].opponentMovesHash == NULL) {
                 return true;
             }
 
