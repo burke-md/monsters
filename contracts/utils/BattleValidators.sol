@@ -33,7 +33,7 @@ contract BattleValidators is BattleData {
     */
     function _validateBattleParticipant(uint256 battleId, address participant)
         internal 
-        pure
+        view
         returns (bool) {
         
             if (battleHistory[battleId].initiator == participant || 
@@ -49,7 +49,7 @@ contract BattleValidators is BattleData {
     */
     function _validateBattleHashRequired(uint256 battleId, address participant)
         internal
-        pure
+        view
         returns (bool) {
             
             if (battleHistory[battleId].initiator == participant &&
