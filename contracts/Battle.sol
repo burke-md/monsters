@@ -75,8 +75,8 @@ contract Battle is Ownable,
             battleHistory[battleId].opponentMovesHash = movesHash;
         }
         
-        if (battleHistory[battleId].opponentMovesHash != NULL &&
-           battleHistory[battleId].initiatorMovesHash != NULL) {
+        if (battleHistory[battleId].opponentMovesHash != NULL_BTS32 &&
+           battleHistory[battleId].initiatorMovesHash != NULL_BTS32) {
             emit BattleHashesCommited(battleId);(battleId);
         } 
     }
@@ -100,21 +100,21 @@ contract Battle is Ownable,
         bytes32 movesHash) 
         public {
     
-        require(_validateMoveInput(movesArr) == true, 
-                "BATTLE: Invalid move definition.");
+        //require(_validateMoveInput(movesArr) == true, 
+        //       "BATTLE: Invalid move definition.");
    
         string memory participantPosition;
 
         if (msg.sender == battleHistory[battleId].initiator) {
             participantPosition = "INITIATOR";  
         } else if (msg.sender == battleHistory[battleId].opponent) {
-            participantPosition == "OPPONENT";
+            participantPosition = "OPPONENT";
         }
 
        //Insure validated moves array is stored under correct participant.  
         if(_validateBattleMovesFromHash(
             movesHash, passPhrase, movesArr) == true &&
-            participantPosition == "INITIATOR") {
+            keccak256(bytes(participantPosition)) == keccak256(bytes("INITIATOR"))) {
             
             battleHistory[battleId].initiatorMovesArr = movesArr;
         }
@@ -122,7 +122,7 @@ contract Battle is Ownable,
             
         if(_validateBattleMovesFromHash(
             movesHash, passPhrase, movesArr) == true &&
-            participantPosition == "OPPONENT") {
+            keccak256(bytes(participantPosition)) == keccak256(bytes("OPPONENT"))) {
             
             battleHistory[battleId].opponentMovesArr = movesArr;
         }
@@ -135,7 +135,7 @@ contract Battle is Ownable,
     */
 
     function _evaluateBattleMoves(uint256 battleId) public onlyOwner  {
-
+/* THIS LOGIC NEEDS TO BE REWORKED  
         string memory result;
         uint8 initiatorMove = battleHistory[battleId].initiatorMove;
         uint8 opponentMove =  battleHistory[battleId].opponentMove;
@@ -146,6 +146,7 @@ contract Battle is Ownable,
         if (initiatorMove > opponentMove) result = "OPPONENT";
 
         _updateBattleInfoResult(result, battleId);
+        */
     }
 
     /** @notice The _updateBattleInfoResult function is the fourth step in the 
@@ -157,7 +158,7 @@ contract Battle is Ownable,
         uint256 battleId) 
         internal {
 
-        address initiator = battleHistory[battleId].initator;
+        address initiator = battleHistory[battleId].initiator;
         address opponent = battleHistory[battleId].opponent;
 
         battleHistory[battleId].result = result;

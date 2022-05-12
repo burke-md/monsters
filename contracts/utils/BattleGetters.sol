@@ -39,7 +39,7 @@ contract BattleGetters is BattleData {
     */
     function getMovesHashCommited (uint battleId) public view returns (bool) {
 
-        return (battleHistory[battleId].initiatorMovesHash != NULL &&
-                battleHistory[battleId].opponentMovesHash != NULL);
+        return (battleHistory[battleId].initiatorMovesHash != NULL_BTS32 &&
+                battleHistory[battleId].opponentMovesHash != NULL_BTS32);
     }
 }

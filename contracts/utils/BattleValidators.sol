@@ -53,13 +53,13 @@ contract BattleValidators is BattleData {
         returns (bool) {
             
             if (battleHistory[battleId].initiator == participant &&
-                battleHistory[battleId].initiatorMovesHash == NULL) {
+                battleHistory[battleId].initiatorMovesHash == NULL_BTS32) {
                 return true;
             }
 
              
             if (battleHistory[battleId].opponent == participant &&
-                battleHistory[battleId].opponentMovesHash == NULL) {
+                battleHistory[battleId].opponentMovesHash == NULL_BTS32) {
                 return true;
             }
 
@@ -72,9 +72,9 @@ contract BattleValidators is BattleData {
     function _validateBattleMovesFromHash(
         bytes32 movesHash,
         string memory passPhrase,
-        int[] memory movesArr) 
-        internal {
-
-            return (keccak256(passPhrase, movesArr) == movesHash);
+        int8[] memory movesArr) 
+        internal pure returns (bool isValid){
+            bytes32 incomingHash = keccak256(abi.encode(passPhrase, movesArr));
+            if (incomingHash == movesHash) return true;
         }
 }
