@@ -41,9 +41,10 @@ contract Battle is Ownable,
 
         battleHistory[_battleId.current()] = battleSet;
 
-        emit NewBattleRecord(_battleId.current(), 
-                             msg.sender, 
-                             opponent);
+        emit NewBattleRecord(
+            _battleId.current(), 
+            msg.sender, 
+            opponent);
     }
 
     /** @notice commitBattleMovesHash is a function that each competitor will
@@ -97,34 +98,27 @@ contract Battle is Ownable,
         uint256 battleId, 
         uint8[] memory movesArr,
         string memory passPhrase,
-        bytes32 movesHash) 
+        bool isInitiator) 
         public {
-    
-        //require(_validateMoveInput(movesArr) == true, 
-        //       "BATTLE: Invalid move definition.");
-   
-        string memory participantPosition;
 
-        if (msg.sender == battleHistory[battleId].initiator) {
-            participantPosition = "INITIATOR";  
-        } else if (msg.sender == battleHistory[battleId].opponent) {
-            participantPosition = "OPPONENT";
+        if (isInitiator) {
+            require(msg.sender == battleHistory[battleId].initiator,
+                "BATTLE: This function is only accessible to those in this battle.");
+        } else if (!isInitiator) {
+            require(msg.sender == battleHistory[battleId].opponent,
+                "BATTLE: This function is only accessible to those in this battle.");
         }
 
-       //Insure validated moves array is stored under correct participant.  
-        if(_validateBattleMovesFromHash(
-            movesHash, passPhrase, movesArr) == true &&
-            keccak256(bytes(participantPosition)) == keccak256(bytes("INITIATOR"))) {
-            
-            battleHistory[battleId].initiatorMovesArr = movesArr;
-        }
+        bytes32 storedMovesHash = isInitiator ? 
+            battleHistory[battleId].initiatorMovesHash :
+            battleHistory[battleId].opponentMovesHash;
 
-            
         if(_validateBattleMovesFromHash(
-            movesHash, passPhrase, movesArr) == true &&
-            keccak256(bytes(participantPosition)) == keccak256(bytes("OPPONENT"))) {
-            
-            battleHistory[battleId].opponentMovesArr = movesArr;
+            storedMovesHash, passPhrase, movesArr)) {
+                
+                isInitiator ?
+                    battleHistory[battleId].initiatorMovesArr = movesArr :
+                    battleHistory[battleId].opponentMovesArr = movesArr;
         }
     }
 

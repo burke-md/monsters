@@ -72,7 +72,7 @@ contract BattleValidators is BattleData {
     function _validateBattleMovesFromHash(
         bytes32 movesHash,
         string memory passPhrase,
-        int8[] memory movesArr) 
+        uint8[] memory movesArr) 
         internal pure returns (bool isValid){
             bytes32 incomingHash = keccak256(abi.encode(passPhrase, movesArr));
             if (incomingHash == movesHash) return true;
