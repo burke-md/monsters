@@ -210,8 +210,8 @@ contract Battle is Ownable,
     /** @notice _updateWinner will call a function within the Monster contract
     *   to update the monster's ELO score (on chain data point).
     */
-    function _updateWinner(uint256 monsterId, uint8 eloIncrease) internal {
-        MonsterInterface monster = MonsterInterface(monsterId, eloIncrease);
+    function _updateWinner(address monsterOwner, uint8 eloIncrease) internal {
+        MonsterInterface monster = MonsterInterface(monsterOwner, eloIncrease);
         monster();
     }
 
