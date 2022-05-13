@@ -31,7 +31,7 @@ contract BattleValidators is BattleData {
     /** @notice The _validateBattleParticipant function will insure only
     *   participants can enter moves into the battle info struct.
     */
-    function _validateBattleParticipant(uint256 battleId, address participant)
+    function _validateBattleParticipant(uint256 battleId, uint256 participant)
         internal 
         view
         returns (bool) {
@@ -47,7 +47,7 @@ contract BattleValidators is BattleData {
     /** @notice _validateBattleHashRequired is a quick check to ensure this 
     *   data is only entered once and is never overwritten.
     */
-    function _validateBattleHashRequired(uint256 battleId, address participant)
+    function _validateBattleHashRequired(uint256 battleId, uint256 participant)
         internal
         view
         returns (bool) {
