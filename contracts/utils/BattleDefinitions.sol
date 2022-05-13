@@ -25,7 +25,7 @@ contract BattleDefinitions {
         bytes32 opponentMovesHash;
         uint8[] initiatorMovesArr;
         uint8[] opponentMovesArr;
-        string result;
+        uint8 result;
   }
 
     /** @notice NewBattleRecord is the definition for the event to be emitted 
@@ -44,9 +44,7 @@ contract BattleDefinitions {
     */
     event CompletedEvaluation (
         uint256 indexed battleId,
-        string indexed result,
-        address initiator,
-        address opponent
+        uint8 indexed result
     );
 
     /** @notice EloUpdate is the definition for the event to be emitted after 

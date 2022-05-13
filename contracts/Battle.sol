@@ -85,21 +85,21 @@ contract Battle is Ownable,
             require(_validateBattleHashRequired(battleId, monsterId), 
                     "BATTLE: Your moves hash has already been commited.");
         
-        if (msg.sender == battleHistory[battleId].initiator) {
-            battleHistory[battleId].initiatorMovesHash = movesHash;
-        }
-        
-        if (msg.sender == battleHistory[battleId].opponent) {
-            battleHistory[battleId].opponentMovesHash = movesHash;
-        }
-        
-        if (battleHistory[battleId].opponentMovesHash != NULL_BTS32 &&
-           battleHistory[battleId].initiatorMovesHash != NULL_BTS32) {
-            emit BattleHashesCommited(battleId);(battleId);
-        } 
+            if (monsterId == battleHistory[battleId].initiator) {
+                battleHistory[battleId].initiatorMovesHash = movesHash;
+            }
+            
+            if (monsterId == battleHistory[battleId].opponent) {
+                battleHistory[battleId].opponentMovesHash = movesHash;
+            }
+            
+            if (battleHistory[battleId].opponentMovesHash != NULL_BTS32 &&
+               battleHistory[battleId].initiatorMovesHash != NULL_BTS32) {
+                emit BattleHashesCommited(battleId);(battleId);
+            } 
     }
 
-    /** @notice The revealBattleMoves function is the second step in the 
+    /** @notice The revealBattleMoves function is the second step in the   
     *   battle mechanics. It accepts an array of moves and a pass phrase,
     *   validates the information and stores the confirmed moves array.
     *   Each participant will have to call this function individually.
@@ -113,30 +113,24 @@ contract Battle is Ownable,
     */
     function revealBattleMoves(
         uint256 battleId, 
+        uint256 monsterId,
         uint8[] memory movesArr,
-        string memory passPhrase,
-        bool isInitiator) 
+        string memory passPhrase)
         public {
 
-        if (isInitiator) {
-            require(msg.sender == battleHistory[battleId].initiator,
-                "BATTLE: This function is only accessible to those in this battle.");
-        } else if (!isInitiator) {
-            require(msg.sender == battleHistory[battleId].opponent,
-                "BATTLE: This function is only accessible to those in this battle.");
-        }
+            //_validateMonsterOnwer
+            require(true,
+                    "BATTLE: Only monster owner can reveal battle moves.");
+            require(_validateBattleMovesFromHash(
+                storedMovesHash,
+                passPhrase,
+                movesArr), "BATTLE: Invalid passphrase.");
 
-        bytes32 storedMovesHash = isInitiator ? 
-            battleHistory[battleId].initiatorMovesHash :
-            battleHistory[battleId].opponentMovesHash;
-
-        if(_validateBattleMovesFromHash(
-            storedMovesHash, passPhrase, movesArr)) {
-                
-                isInitiator ?
-                    battleHistory[battleId].initiatorMovesArr = movesArr :
-                    battleHistory[battleId].opponentMovesArr = movesArr;
-        }
+            if (battleHistory[battleId].initiator == monsterId) {
+                battleHistory[BattleId].initiatorMovesArr = movesArr;
+            } else if (battleHistory[battleId].opponent == monsterId) {
+                battleHistory[BattleId].opponentMovesArr = movesArr;
+            }
     }
 
     /** @notice The _evaluateBattleMoves function is the third step in the 
@@ -145,19 +139,26 @@ contract Battle is Ownable,
     *   and emit an event.
     */
 
-    function _evaluateBattleMoves(uint256 battleId) public onlyOwner  {
-/* THIS LOGIC NEEDS TO BE REWORKED  
-        string memory result;
-        uint8 initiatorMove = battleHistory[battleId].initiatorMove;
-        uint8 opponentMove =  battleHistory[battleId].opponentMove;
+    function _evaluateBattleMoves(uint256 battleId) internal {
+        uint8 result = 3;
+        
+        uint8[] initiatorArr = battleHistory[battleId].initiatorMovesArr;
+        uint8[] opponentArr =  battleHistory[battleId].opponentMove;
 
-        if (initiatorMove == opponentMove) result = "DRAW";
-        if (initiatorMove < opponentMove && 
-            opponentMove != 0) result = "INITIATOR";
-        if (initiatorMove > opponentMove) result = "OPPONENT";
+        require(initiatorArr.length == opponentArr.length, 
+        "BATTLE: Lists of moves are not of equal length.");
+        
+        for (uint i = 0; i < initiatorArr.length; i ++) {
 
-        _updateBattleInfoResult(result, battleId);
-        */
+            uint8 initiatorMove = initiatorArr[i];
+            uint8 opponentMove = opponentArr[i];
+            
+            if (initiatorMove < opponentMove && 
+                opponentMove != 0) result -= 1;
+            if (initiatorMove > opponentMove) result += 1;
+        }
+
+            _updateBattleInfoResult(result, battleId);
     }
 
     /** @notice The _updateBattleInfoResult function is the fourth step in the 
@@ -165,16 +166,13 @@ contract Battle is Ownable,
     *   BattleInfo strucut, then emit an event.
     */
     function _updateBattleInfoResult(
-        string memory result, 
+        uint8 result, 
         uint256 battleId) 
         internal {
 
-        address initiator = battleHistory[battleId].initiator;
-        address opponent = battleHistory[battleId].opponent;
-
         battleHistory[battleId].result = result;
 
-        emit CompletedEvaluation(battleId, result, initiator, opponent);
+        emit CompletedEvaluation(battleId, result);
     }
 
 
@@ -184,7 +182,7 @@ contract Battle is Ownable,
     *   mechanics. It will update the onchain ELO data pertaining to each 
     *   monster. Somewhat akin to an xp value.
     *
-    *   @param points should be within the range of 1-5 (inclusive). 
+    *   @param result should be within the range of 1-5 (inclusive). 
     *   Where 3 is neutral, a draw. 5 would assign two wins to the opponent, 
     *   while 1 would assign two wins to the initiator.
     *
@@ -192,33 +190,33 @@ contract Battle is Ownable,
     */
 
     function _evaluateMonsterElo(
-        address initiator, 
-        address opponent, 
-        uint8 points, 
-        uint256 battleId) 
+        uint256 battleId,
+        uint8 result) 
         internal {
         
-        require(_validateEloPoints(points), 
+        require(_validateEloPoints(result), 
                 "Invalid data. Cannot update ELO values.");
 
         string memory outcome;
         uint8 eloIncrease;
+        uint256 initiatorMonster = battleHistory[battleId].initiator;
+        uint256 opponentMonster = battleHistory[battleId].opponent;
 
-        if (points == 3) {
+        if (result == 3) {
             outcome = "DRAW";
             eloIncrease = 0;
         }
 
-        if (points > 3) {
+        if (result > 3) {
             outcome = "OPPONENT"; 
-            eloIncrease = (points - 3) *  ELO_POINTS_PER_WIN;
-            _updateWinner(opponent, eloIncrease);
+            eloIncrease = (result - 3) *  ELO_POINTS_PER_WIN;
+            _updateWinner(opponentMonster, eloIncrease);
         }
 
-        if (points < 3) {
+        if (result < 3) {
             outcome = "INITIATOR";
-            eloIncrease = (3 - points) *  ELO_POINTS_PER_WIN;
-            _updateWinner(initiator, eloIncrease);
+            eloIncrease = (3 - result) *  ELO_POINTS_PER_WIN;
+            _updateWinner(initiatorMonster, eloIncrease);
         }
 
         emit EloUpdate(battleId, outcome, eloIncrease);
@@ -234,6 +232,7 @@ contract Battle is Ownable,
 
   /** TODO
 - Implement require in _initiateBattle (check for ownership)
+- handle external calls to Monster contract.
 -prevent multiple battles
 -refactor for modularity etc.
 - Review function access modifiers
