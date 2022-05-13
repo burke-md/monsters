@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 import "./BattleData.sol"; 
+import "./BattleDefinitions.sol";
 
 contract BattleValidators is BattleData {
     /** @notice The _isValidMoveInput function will insure that non-approved 
@@ -30,9 +31,9 @@ contract BattleValidators is BattleData {
     /** @notice The _validateBattleParticipant function will insure only
     *   participants can enter moves into the battle info struct.
     */
-    function _validateBattleParticipant(uint256 battleId, address participant)
+    function _validateBattleParticipant(uint256 battleId, uint256 participant)
         internal 
-        pure
+        view
         returns (bool) {
         
             if (battleHistory[battleId].initiator == participant || 
@@ -46,19 +47,19 @@ contract BattleValidators is BattleData {
     /** @notice _validateBattleHashRequired is a quick check to ensure this 
     *   data is only entered once and is never overwritten.
     */
-    function _validateBattleHashRequired(uint256 battleId, address participant)
+    function _validateBattleHashRequired(uint256 battleId, uint256 participant)
         internal
-        pure
+        view
         returns (bool) {
             
             if (battleHistory[battleId].initiator == participant &&
-                battleHistory[battleId].initiatorMovesHash == null) {
+                battleHistory[battleId].initiatorMovesHash == NULL_BTS32) {
                 return true;
             }
 
              
             if (battleHistory[battleId].opponent == participant &&
-                battleHistory[battleId].opponentMovesHash == null) {
+                battleHistory[battleId].opponentMovesHash == NULL_BTS32) {
                 return true;
             }
 
@@ -71,8 +72,9 @@ contract BattleValidators is BattleData {
     function _validateBattleMovesFromHash(
         bytes32 movesHash,
         string memory passPhrase,
-        int[] memory movesArr) {
-
-            return (keccak256(passPhrase, movesArr) == movesHash);
+        uint8[] memory movesArr) 
+        internal pure returns (bool isValid){
+            bytes32 incomingHash = keccak256(abi.encode(passPhrase, movesArr));
+            if (incomingHash == movesHash) return true;
         }
 }

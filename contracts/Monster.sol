@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 
 interface MonsterInterface {
-    function _updateElo(address monster, uint8 points) external;
+    function _updateElo(uint256 monsterId, uint8 points) external;
 }
 
 
@@ -155,7 +155,7 @@ set URI
   *
   */
 
-  function _updateElo(address monster, uint8 points) external onlyBattle {
+  function _updateElo(uint256 monsterId, uint8 points) external onlyBattle {
 
   }
 
