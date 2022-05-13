@@ -23,14 +23,21 @@ contract Battle is Ownable,
     *   mechanics. It simply stores and emits some data. 
     *   There are no calculations made here.
     */
-    function initiateBattle(address opponent) public {
+    function initiateBattle(
+        uint256 initiatorMonsterId, 
+        uint256 opponentMonsterId) 
+        public {
+        //Insure initiator owns monster
+        require(true, 
+                "BATTLE: The initiator of a battle must own the initiating monster.")
+
         _battleId.increment();
 
         BattleInfo memory battleSet;
         battleSet = BattleInfo({ 
             id: _battleId.current(),
-            initiator: msg.sender,
-            opponent: opponent,
+            initiator: initiatorMonsterId,
+            opponent: opponentMonsterId,
             isComplete: false,
             initiatorMovesHash: NULL_BTS32,
             opponentMovesHash: NULL_BTS32,
@@ -43,8 +50,8 @@ contract Battle is Ownable,
 
         emit NewBattleRecord(
             _battleId.current(), 
-            msg.sender, 
-            opponent);
+            initiatorMonsterId, 
+            opponentMonsterId);
     }
 
     /** @notice commitBattleMovesHash is a function that each competitor will
@@ -210,23 +217,14 @@ contract Battle is Ownable,
     /** @notice _updateWinner will call a function within the Monster contract
     *   to update the monster's ELO score (on chain data point).
     */
-    function _updateWinner(address monsterOwner, uint8 eloIncrease) internal {
+    function _updateWinner(uint256 monsterId, uint8 eloIncrease) internal {
         MonsterInterface monster = MonsterInterface(monsterOwner, eloIncrease);
         monster();
     }
 
   /** TODO
-X counter for battle
-X create new battle, w/ 2x address and battle id
-X emit event
-X store moved in battle struct?
-X function for inputting "moves"
-X require moved to be of acceptable type
-X calculate winner
-X update battle record
-X adjust winner/looser ELO score
+- Implement require in _initiateBattle (check for ownership)
 -prevent multiple battles
-X  Resolve "blind move" issue.
 -refactor for modularity etc.
 - Review function access modifiers
 */

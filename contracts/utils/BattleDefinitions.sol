@@ -18,8 +18,8 @@ contract BattleDefinitions {
 
     struct BattleInfo {
         uint256 id;
-        address initiator;
-        address opponent;
+        uint256 initiator;
+        uint256 opponent;
         bool isComplete;
         bytes32 initiatorMovesHash;
         bytes32 opponentMovesHash;
@@ -34,8 +34,8 @@ contract BattleDefinitions {
   
     event NewBattleRecord (
         uint256 indexed battleId,
-        address sender,
-        address opponent
+        uint256 sender,
+        uint256 opponent
     );
 
     /** @notice CompletedEvaluation is the definition for the event to be 
