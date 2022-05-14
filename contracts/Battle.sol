@@ -235,6 +235,5 @@ contract Battle is Ownable,
 - handle external calls to Monster contract.
 -prevent multiple battles
 -refactor for modularity etc.
-- Review function access modifiers
 */
 }
