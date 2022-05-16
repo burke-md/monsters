@@ -29,8 +29,8 @@ contract Battle is Ownable,
         public {
         //Insure initiator owns monster
         //_validateMonsterOwner
-        require(true, 
-                "BATTLE: The initiator of a battle must own the initiating monster.")
+        //require(true, 
+                //"BATTLE: The initiator of a battle must own the initiating monster.")
 
         _battleId.increment();
 
@@ -117,19 +117,27 @@ contract Battle is Ownable,
         uint8[] memory movesArr,
         string memory passPhrase)
         public {
+            
+            bytes32 storedMovesHash;
 
-            //_validateMonsterOnwer
+            if (battleHistory[battleId].initiator = monsterId) {
+                storedMovesHash = battleHistory[battleId].initiatorMovesHash;
+            } else {
+                storedMovesHash = battleHistory[battleId].opponentMovesHash;
+            }
+
             require(true,
                     "BATTLE: Only monster owner can reveal battle moves.");
+
             require(_validateBattleMovesFromHash(
                 storedMovesHash,
                 passPhrase,
                 movesArr), "BATTLE: Invalid passphrase.");
 
             if (battleHistory[battleId].initiator == monsterId) {
-                battleHistory[BattleId].initiatorMovesArr = movesArr;
+                battleHistory[battleId].initiatorMovesArr = movesArr;
             } else if (battleHistory[battleId].opponent == monsterId) {
-                battleHistory[BattleId].opponentMovesArr = movesArr;
+                battleHistory[battleId].opponentMovesArr = movesArr;
             }
     }
 
