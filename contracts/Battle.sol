@@ -9,7 +9,9 @@ import "./utils/BattleData.sol";
 import "./utils/BattleGetters.sol";
 import "./utils/BattleValidators.sol";
 
-import "./Monster.sol";
+interface IMonster {
+    function updateElo(uint256 monsterId, uint8 points) external;
+}
 
 contract Battle is Ownable, 
     BattleDefinitions, 
@@ -234,14 +236,12 @@ contract Battle is Ownable,
     *   to update the monster's ELO score (on chain data point).
     */
     function _updateWinner(uint256 monsterId, uint8 eloIncrease) internal {
-        MonsterInterface monster = MonsterInterface(monsterOwner, eloIncrease);
-        monster();
+        IMonster(monsterContractAddress).updateElo(monsterId, eloIncrease);
     }
 
   /** TODO
 - Implement require in _initiateBattle (check for ownership)
 - handle external calls to Monster contract.
 -prevent multiple battles
--refactor for modularity etc.
 */
 }

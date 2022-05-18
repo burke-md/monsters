@@ -8,12 +8,6 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-
-interface MonsterInterface {
-    function _updateElo(uint256 monsterId, uint8 points) external;
-}
-
-
 contract Monster is ERC721, 
     ERC721Pausable, 
     ERC721Burnable, 
@@ -33,7 +27,11 @@ contract Monster is ERC721,
   mapping (uint => uint) IdToElo;
 
   event NewMonster(uint monsterId, uint Elo);
-
+        
+    /**
+    *   @notice onlyBattle modifier will ensure only the battle contract calls 
+    *   the update ELO function.
+    */
     modifier onlyBattle {
         require(msg.sender == battleContractAddress,
                 "MONSTER: Confirm battle address has been set by owner and that this function is only being called from the Battle contract.");
@@ -145,19 +143,19 @@ set URI
        return super.tokenURI(tokenId);
   }
 
-  /**
-  * @notice The _updateElo  function will be made available via the interface. 
-  * It will be called after a battle is resolved to add points to the winner.
-  * At this time ELO points will ONLY increment. There is not decrement 
-  * functionality.
-  *
-  * @ require _updateElo can only be called by the Battle contract. 
-  *
-  */
+    /**
+    * @notice The _updateElo  function will be made available via the interface. 
+    * It will be called after a battle is resolved to add points to the winner.
+    * At this time ELO points will ONLY increment. There is not decrement 
+    * functionality.
+    *
+    * @ require _updateElo can only be called by the Battle contract. 
+    *
+    */
 
-  function _updateElo(uint256 monsterId, uint8 points) external onlyBattle {
+    function updateElo(uint256 monsterId, uint8 points) external onlyBattle {
 
-  }
+    }
 
 }
 
