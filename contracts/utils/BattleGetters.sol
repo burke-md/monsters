@@ -28,10 +28,20 @@ contract BattleGetters is BattleData {
 
     /** @notice The getBattleResult function is a simple getter function.
     *
-    *   @ returns string(initiator, opponent, draw).
+    *   @return string(initiator, opponent, draw).
     */
-    function getBattleResult (uint256 battleId) public view returns (string memory) {
-        return battleHistory[battleId].result;
+    function getBattleResult 
+        (uint256 battleId) 
+        public 
+        view 
+        returns (string memory) {
+            uint8 val = battleHistory[battleId].result;
+
+            if (val < 3) return "INITIATOR"
+
+            if (val == 3) return "DRAW"
+
+            if (val > 3) return "OPPONENT"
     }
 
     /** @notice getMovesHashCommited returns a boolean value. It will confirm
