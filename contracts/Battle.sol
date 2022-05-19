@@ -46,7 +46,7 @@ contract Battle is Ownable,
             opponentMovesHash: NULL_BTS32,
             initiatorMovesArr: new uint8[](0),
             opponentMovesArr: new uint8[](0),
-            result: NULL_STR
+            result: 3
         });
 
         battleHistory[_battleId.current()] = battleSet;
@@ -122,7 +122,7 @@ contract Battle is Ownable,
             
             bytes32 storedMovesHash;
 
-            if (battleHistory[battleId].initiator = monsterId) {
+            if (battleHistory[battleId].initiator == monsterId) {
                 storedMovesHash = battleHistory[battleId].initiatorMovesHash;
             } else {
                 storedMovesHash = battleHistory[battleId].opponentMovesHash;
@@ -152,8 +152,8 @@ contract Battle is Ownable,
     function _evaluateBattleMoves(uint256 battleId) internal {
         uint8 result = 3;
         
-        uint8[] initiatorArr = battleHistory[battleId].initiatorMovesArr;
-        uint8[] opponentArr =  battleHistory[battleId].opponentMove;
+        uint8[] memory initiatorArr = battleHistory[battleId].initiatorMovesArr;
+        uint8[] memory opponentArr =  battleHistory[battleId].opponentMovesArr;
 
         require(initiatorArr.length == opponentArr.length, 
         "BATTLE: Lists of moves are not of equal length.");

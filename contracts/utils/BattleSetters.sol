@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "./BattleData.sol"
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "./BattleData.sol";
 
-contract BattleSetters  is BattleData {
+contract BattleSetters  is Ownable, BattleData {
     
     /** @notice setMonsterContractAddress will be used once to establish a 'constant'
     *   which is used in the calling of a Monster contract function by the
@@ -17,4 +18,5 @@ contract BattleSetters  is BattleData {
         onlyOwner {
             
             monsterContractAddress = _monsterContractAddress;
+    }
 }
