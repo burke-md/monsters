@@ -37,11 +37,11 @@ contract BattleGetters is BattleData {
         returns (string memory) {
             uint8 val = battleHistory[battleId].result;
 
-            if (val < 3) return "INITIATOR"
+            if (val < 3) return "INITIATOR";
 
-            if (val == 3) return "DRAW"
+            if (val == 3) return "DRAW";
 
-            if (val > 3) return "OPPONENT"
+            if (val > 3) return "OPPONENT";
     }
 
     /** @notice getMovesHashCommited returns a boolean value. It will confirm
