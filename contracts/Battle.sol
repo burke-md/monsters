@@ -127,9 +127,10 @@ contract Battle is Ownable,
             } else {
                 storedMovesHash = battleHistory[battleId].opponentMovesHash;
             }
-
-            require(true,
-                    "BATTLE: Only monster owner can reveal battle moves.");
+            
+            /** @dev _validateMonsterOwner has been removed as correct pass
+            *   phrase will provide adequit protection.
+            */
 
             require(_validateBattleMovesFromHash(
                 storedMovesHash,
@@ -140,6 +141,14 @@ contract Battle is Ownable,
                 battleHistory[battleId].initiatorMovesArr = movesArr;
             } else if (battleHistory[battleId].opponent == monsterId) {
                 battleHistory[battleId].opponentMovesArr = movesArr;
+            }
+            
+            /** @dev Once both participants have revealed their moves, call 
+            *   next function in evaluation procedure
+            */
+            if (battleHistory[battleId].initiatorMovesArr.length == 3 &&
+                battleHistory[battleId].opponentMovesArr.length == 3) {
+                _evaluateBattleMoves(battleId);
             }
     }
 
@@ -183,6 +192,7 @@ contract Battle is Ownable,
         battleHistory[battleId].result = result;
 
         emit CompletedEvaluation(battleId, result);
+        _evaluateMonsterElo(battleId, result);
     }
 
 
@@ -204,9 +214,6 @@ contract Battle is Ownable,
         uint8 result) 
         internal {
         
-        require(_validateEloPoints(result), 
-                "Invalid data. Cannot update ELO values.");
-
         string memory outcome;
         uint8 eloIncrease;
         uint256 initiatorMonster = battleHistory[battleId].initiator;
@@ -239,9 +246,8 @@ contract Battle is Ownable,
         IMonster(monsterContractAddress).updateElo(monsterId, eloIncrease);
     }
 
-  /** TODO
+/** TODO
 - Implement require in _initiateBattle (check for ownership)
-- handle external calls to Monster contract.
--prevent multiple battles
+- Prevent multiple battles
 */
 }
