@@ -9,7 +9,7 @@ import "./utils/BattleData.sol";
 import "./utils/BattleGetters.sol";
 import "./utils/BattleValidators.sol";
 
-interface IMonster {
+interface IMonsterElo {
     function updateElo(uint256 monsterId, uint8 points) external;
 }
 
@@ -32,7 +32,7 @@ contract Battle is Ownable,
         public {
         
             require(_validateMonsterOwner(msg.sender, initiatorMonsterId), 
-                "BATTLE: The initiator of a battle must own the initiating monster.")
+                "BATTLE: The initiator of a battle must own the initiating monster.");
 
             _battleId.increment();
 
@@ -83,7 +83,7 @@ contract Battle is Ownable,
         bytes32 movesHash) 
         public {
 
-            require(_validateMonsterOwner,
+            require(_validateMonsterOwner(msg.sender, monsterId),
                     "BATTLE: Only monster owner can commit battle movesHash.");
             require(_validateBattleParticipant(battleId, monsterId), 
                     "BATTLE: This monster is not a participant in this battle.");
@@ -245,6 +245,6 @@ contract Battle is Ownable,
     */
 
     function _updateWinner(uint256 monsterId, uint8 eloIncrease) internal {
-        IMonster(monsterContractAddress).updateElo(monsterId, eloIncrease);
+        IMonsterElo(monsterContractAddress).updateElo(monsterId, eloIncrease);
     }
 }
