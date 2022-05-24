@@ -128,12 +128,23 @@ contract Monster is ERC721,
     *
     */
 
-  function _updateElo(address monster, uint8 points) external onlyBattle {
-    
-  }
+    function updateElo(uint256 monsterId, uint8 points) external onlyBattle {
+
+    }
+
+    /** @notice checkOwnership is a funtion to be called by the Battle contract
+    *   to insure only the owners of monsters and battling with them.
+    */
+
+    function checkOwnership(
+        address _owner, 
+        uint256 monsterId) 
+        external 
+        onlyBattle
+        returns (bool isValid) {
+            
+            if (ownerOf(monsterId) == _owner) return true;
+
+            return false;
+    }
 }
-
-
-
-
-

@@ -4,6 +4,15 @@ pragma solidity ^0.8.4;
 import "./BattleData.sol"; 
 import "./BattleDefinitions.sol";
 
+interface IMonsterValidator {
+    
+    function checkOwnership(
+        address _owner, 
+        uint256 battleId) 
+        external 
+        returns (bool isValid);
+}  
+
 contract BattleValidators is BattleData {
     /** @notice The _isValidMoveInput function will insure that non-approved 
     *   'moves' are not input into the BattleInfo struct.
@@ -76,5 +85,22 @@ contract BattleValidators is BattleData {
         internal pure returns (bool isValid){
             bytes32 incomingHash = keccak256(abi.encode(passPhrase, movesArr));
             if (incomingHash == movesHash) return true;
-        }
+    }
+
+    /** @notice The _validateMonsterOwner function will be used to validate that
+    *   only the wallet address which holds the Monster nft can call specific
+    *   functions.
+    */
+
+   function _validateMonsterOwner(
+        address _caller, 
+        uint256 monsterId) 
+        internal returns (bool isValid) {
+           
+            isValid = IMonsterValidator(monsterContractAddress).checkOwnership(
+                _caller, 
+                monsterId); 
+
+            return isValid;
+    } 
 }
