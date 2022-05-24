@@ -9,9 +9,9 @@ import "./utils/BattleData.sol";
 import "./utils/BattleGetters.sol";
 import "./utils/BattleValidators.sol";
 
-//interface IMonster {
- //   function updateElo(uint256 monsterId, uint8 points) external;
-//}
+interface IMonsterElo {
+    function updateElo(uint256 monsterId, uint8 points) external;
+}
 
 contract Battle is Ownable, 
     BattleDefinitions, 
@@ -245,6 +245,6 @@ contract Battle is Ownable,
     */
 
     function _updateWinner(uint256 monsterId, uint8 eloIncrease) internal {
-        IMonster(monsterContractAddress).updateElo(monsterId, eloIncrease);
+        IMonsterElo(monsterContractAddress).updateElo(monsterId, eloIncrease);
     }
 }
