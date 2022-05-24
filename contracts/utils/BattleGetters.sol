@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
+
 import "./BattleData.sol";
+import "./BattleDefinitions.sol";
 
 contract BattleGetters is BattleData {
 
@@ -24,30 +26,22 @@ contract BattleGetters is BattleData {
     return battleHistory[battleId].isComplete;
   }
 
-  // @notice The getBattleMovesArr function is a simple getter function.
-
-  // @returns array of strings [initiatorMove, opponentMove].
-
-    function getBattleMovesArr (
-        uint256 battleId) 
-        public 
-        view 
-        returns (uint8[] memory) {
-
-        uint8[] memory moves = new uint8[](2);
-
-        moves[0] = battleHistory[battleId].initiatorMove;
-        moves[1] = battleHistory[battleId].opponentMove;
-
-        return moves;
-    }
-
     /** @notice The getBattleResult function is a simple getter function.
     *
-    *   @returns string(initator, opponent, draw).
+    *   @return string(initiator, opponent, draw).
     */
-    function getBattleResult (uint256 battleId) public view returns (string memory) {
-        return battleHistory[battleId].result;
+    function getBattleResult 
+        (uint256 battleId) 
+        public 
+        view 
+        returns (string memory) {
+            uint8 val = battleHistory[battleId].result;
+
+            if (val < 3) return "INITIATOR";
+
+            if (val == 3) return "DRAW";
+
+            if (val > 3) return "OPPONENT";
     }
 
     /** @notice getMovesHashCommited returns a boolean value. It will confirm
@@ -55,7 +49,7 @@ contract BattleGetters is BattleData {
     */
     function getMovesHashCommited (uint battleId) public view returns (bool) {
 
-        return (battleHistory[battleId].initiatorMovesHash != null &&
-                battleHistory[battleId].opponentMovesHash != null) 
+        return (battleHistory[battleId].initiatorMovesHash != NULL_BTS32 &&
+                battleHistory[battleId].opponentMovesHash != NULL_BTS32);
     }
 }
