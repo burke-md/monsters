@@ -10,8 +10,8 @@ contract RandomNumberVRF is VRFConsumerBase {
 
     constructor()
         VRFConsumerBase(
-        0xAE975071Be8F8eE67addBC1A82488F1C24858067, // VRF Coordinator
-        0xb0897686c545045aFc77CF20eC7A532E3120E0F1  // LINK Token
+        0x6168499c0cFfCaCD319c818142124B7A15E857ab, // VRF Coordinator
+        0x01BE23585060835E02B77ef475b0Cc51aA1e0709  // LINK Token
         )
     {
         keyHash = 0xcc294a196eeeb44da2888d17c0625cc88d70d9760a69d58d853ba6581a9ab0cd;
