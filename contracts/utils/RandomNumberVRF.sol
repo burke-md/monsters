@@ -14,7 +14,7 @@ contract RandomNumberVRF is VRFConsumerBase {
         0x01BE23585060835E02B77ef475b0Cc51aA1e0709  // LINK Token
         )
     {
-        keyHash = 0xcc294a196eeeb44da2888d17c0625cc88d70d9760a69d58d853ba6581a9ab0cd;
+        keyHash = 0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc;
         fee = 0.1 * 10 ** 18; // 0.1 LINK (Varies by network)
     }
 
