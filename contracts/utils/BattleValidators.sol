@@ -92,7 +92,7 @@ contract BattleValidators is BattleData {
     *   functions.
     */
 
-   function _validateMonsterOnwer(
+   function _validateMonsterOwner(
         address _caller, 
         uint256 monsterId) 
         internal returns (bool isValid) {
