@@ -81,6 +81,16 @@ contract Monster is ERC721,
     return tokenId;
   }
 
+  function _baseURI() internal pure override returns (string memory) {
+    return "ipfs://QmVCNF9M7ABGBSLkmAvamjfNs8cNdCctwr2W9Us1S6TWyF/";
+  }
+
+  function appendJsonSuffix(uint256 tokenId) internal {
+    string memory numTokenId = Strings.toString(tokenId);
+    string memory suffix = string(abi.encodePacked(numTokenId, ".json"));
+    _setTokenURI(tokenId, suffix);
+  }
+
 
   function mintMonster() public payable whenNotPaused {
     
@@ -92,6 +102,7 @@ contract Monster is ERC721,
     uint newTokenId = _GenerateNewTokenId();
 
     _safeMint(msg.sender, newTokenId);
+    appendJsonSuffix(newTokenId);
 
     _tokenIdCounter.increment();
     IdToElo[newTokenId] = startingElo;
@@ -101,24 +112,20 @@ contract Monster is ERC721,
   }
 
   function _beforeTokenTransfer(address from, address to, uint256 tokenId)
-  internal
-  whenNotPaused
-  override
+    internal
+    whenNotPaused
+    override
   {
     super._beforeTokenTransfer(from, to, tokenId)
   }
-
-/*
-set URI
-*/
 
   function _burn(uint256 tokenId) 
     internal 
     override 
     (ERC721, ERC721URIStorage) 
-    {
+  {
       super._burn(tokenId);
-    }
+  }
 
   /**
   *
