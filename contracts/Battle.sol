@@ -32,7 +32,7 @@ contract Battle is Ownable,
         public {
         
             require(_validateMonsterOwner(msg.sender, initiatorMonsterId), 
-                "BATTLE: The initiator of a battle must own the initiating monster.")
+                "BATTLE: The initiator of a battle must own the initiating monster.");
 
             _battleId.increment();
 
