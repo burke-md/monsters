@@ -163,16 +163,13 @@ set URI
 
     function checkOwnership(
         address _owner, 
-        uint256 battleId) 
+        uint256 monsterId) 
         external 
         onlyBattle
         returns (bool isValid) {
             
-            return ownerOf(battleId) == _owner;
+            if (ownerOf(monsterId) == _owner) return true;
+
+            return false;
     }
 }
-
-
-
-
-
