@@ -9,9 +9,9 @@ import "./utils/BattleData.sol";
 import "./utils/BattleGetters.sol";
 import "./utils/BattleValidators.sol";
 
-interface IMonster {
-    function updateElo(uint256 monsterId, uint8 points) external;
-}
+//interface IMonster {
+ //   function updateElo(uint256 monsterId, uint8 points) external;
+//}
 
 contract Battle is Ownable, 
     BattleDefinitions, 
@@ -83,7 +83,7 @@ contract Battle is Ownable,
         bytes32 movesHash) 
         public {
 
-            require(_validateMonsterOwner,
+            require(_validateMonsterOwner(msg.sender, monsterId),
                     "BATTLE: Only monster owner can commit battle movesHash.");
             require(_validateBattleParticipant(battleId, monsterId), 
                     "BATTLE: This monster is not a participant in this battle.");
