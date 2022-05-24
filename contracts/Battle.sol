@@ -30,32 +30,31 @@ contract Battle is Ownable,
         uint256 initiatorMonsterId, 
         uint256 opponentMonsterId) 
         public {
-        //Insure initiator owns monster
-        //_validateMonsterOwner
-        //require(true, 
-                //"BATTLE: The initiator of a battle must own the initiating monster.")
+        
+            require(_validateMonsterOwner(msg.sender, initiatorMonsterId), 
+                "BATTLE: The initiator of a battle must own the initiating monster.")
 
-        _battleId.increment();
+            _battleId.increment();
 
-        BattleInfo memory battleSet;
-        battleSet = BattleInfo({ 
-            id: _battleId.current(),
-            initiator: initiatorMonsterId,
-            opponent: opponentMonsterId,
-            isComplete: false,
-            initiatorMovesHash: NULL_BTS32,
-            opponentMovesHash: NULL_BTS32,
-            initiatorMovesArr: new uint8[](0),
-            opponentMovesArr: new uint8[](0),
-            result: 3
-        });
+            BattleInfo memory battleSet;
+            battleSet = BattleInfo({ 
+                id: _battleId.current(),
+                initiator: initiatorMonsterId,
+                opponent: opponentMonsterId,
+                isComplete: false,
+                initiatorMovesHash: NULL_BTS32,
+                opponentMovesHash: NULL_BTS32,
+                initiatorMovesArr: new uint8[](0),
+                opponentMovesArr: new uint8[](0),
+                result: 3
+            });
 
-        battleHistory[_battleId.current()] = battleSet;
+            battleHistory[_battleId.current()] = battleSet;
 
-        emit NewBattleRecord(
-            _battleId.current(), 
-            initiatorMonsterId, 
-            opponentMonsterId);
+            emit NewBattleRecord(
+                _battleId.current(), 
+                initiatorMonsterId, 
+                opponentMonsterId);
     }
 
     /** @notice commitBattleMovesHash is a function that each competitor will
@@ -76,7 +75,6 @@ contract Battle is Ownable,
     *       hashed on chain. If the two hashes match, the moved will be 
     *       considered valid. The outcome will then be calculated and ELO 
     *       points awarded. 
-    *
     */
 
     function commitBattleMovesHash(
@@ -85,8 +83,7 @@ contract Battle is Ownable,
         bytes32 movesHash) 
         public {
 
-            //_validateMonsterOwner
-            require(true,
+            require(_validateMonsterOwner,
                     "BATTLE: Only monster owner can commit battle movesHash.");
             require(_validateBattleParticipant(battleId, monsterId), 
                     "BATTLE: This monster is not a participant in this battle.");
@@ -250,9 +247,4 @@ contract Battle is Ownable,
     function _updateWinner(uint256 monsterId, uint8 eloIncrease) internal {
         IMonster(monsterContractAddress).updateElo(monsterId, eloIncrease);
     }
-
-/** TODO
-- Implement require in _initiateBattle (check for ownership)
-- Prevent multiple battles
-*/
 }
