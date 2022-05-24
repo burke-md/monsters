@@ -21,67 +21,70 @@ contract Battle is Ownable,
 
     using Counters for Counters.Counter;
 
-    /** @notice The initiateBattle function is the first step in the battle
-    *   mechanics. It simply stores and emits some data. 
+    /** @notice initiateBattle function is the first step in the battle
+    *   mechanics. It stores and emits some data. 
     *   There are no calculations made here.
     */
+
     function initiateBattle(
         uint256 initiatorMonsterId, 
         uint256 opponentMonsterId) 
         public {
-        //Insure initiator owns monster
-        //_validateMonsterOwner
-        //require(true, 
-                //"BATTLE: The initiator of a battle must own the initiating monster.")
+        
+            require(_validateMonsterOwner(msg.sender, initiatorMonsterId), 
+                "BATTLE: The initiator of a battle must own the initiating monster.")
 
-        _battleId.increment();
+            _battleId.increment();
 
-        BattleInfo memory battleSet;
-        battleSet = BattleInfo({ 
-            id: _battleId.current(),
-            initiator: initiatorMonsterId,
-            opponent: opponentMonsterId,
-            isComplete: false,
-            initiatorMovesHash: NULL_BTS32,
-            opponentMovesHash: NULL_BTS32,
-            initiatorMovesArr: new uint8[](0),
-            opponentMovesArr: new uint8[](0),
-            result: 3
-        });
+            BattleInfo memory battleSet;
+            battleSet = BattleInfo({ 
+                id: _battleId.current(),
+                initiator: initiatorMonsterId,
+                opponent: opponentMonsterId,
+                isComplete: false,
+                initiatorMovesHash: NULL_BTS32,
+                opponentMovesHash: NULL_BTS32,
+                initiatorMovesArr: new uint8[](0),
+                opponentMovesArr: new uint8[](0),
+                result: 3
+            });
 
-        battleHistory[_battleId.current()] = battleSet;
+            battleHistory[_battleId.current()] = battleSet;
 
-        emit NewBattleRecord(
-            _battleId.current(), 
-            initiatorMonsterId, 
-            opponentMonsterId);
+            emit NewBattleRecord(
+                _battleId.current(), 
+                initiatorMonsterId, 
+                opponentMonsterId);
     }
 
     /** @notice commitBattleMovesHash is a function that each competitor will
     *   call for themselves. This is the begining of the comit/reveal pattern.
     *
     *   STEP 1:
-    *       The front end will hash an array of moves and a secret pass phrase.
+    *       The front end will hash(keccak256) an array of moves and a secret 
+    *       pass phrase.
     *   STEP2:
-    *       Calling this function, the hash will be stored on chain.
+    *       Calling this function(commitBattleMovesHash), the hash will be 
+    *       stored on chain.
     *   STEP3:
-    *       After the second hash is stored an event will be emitted.
+    *       After the second player's hash is stored an event will be emitted.
+    *       This state is also be available via a getter function
+    *       (getMovesHashCommited will return a bool).
     *   STEP4:
     *       User will re-enter their moves array and pass phrase. These will be
-    *       hashed on chain. If the two hashes match, the moved will be valid.
-    *       The outcome will be calculated and ELO points awarded. 
-    *
+    *       hashed on chain. If the two hashes match, the moved will be 
+    *       considered valid. The outcome will then be calculated and ELO 
+    *       points awarded. 
     */
+
     function commitBattleMovesHash(
         uint256 battleId, 
         uint256 monsterId,
         bytes32 movesHash) 
         public {
 
-            //_validateMonsterOwner
-            require(true,
+            require(_validateMonsterOwner,
                     "BATTLE: Only monster owner can commit battle movesHash.");
-
             require(_validateBattleParticipant(battleId, monsterId), 
                     "BATTLE: This monster is not a participant in this battle.");
             require(_validateBattleHashRequired(battleId, monsterId), 
@@ -113,6 +116,7 @@ contract Battle is Ownable,
     *   @param movesArr is an integer array of moves to be evaluated against
     *   the other participants moves.
     */
+
     function revealBattleMoves(
         uint256 battleId, 
         uint256 monsterId,
@@ -128,10 +132,6 @@ contract Battle is Ownable,
                 storedMovesHash = battleHistory[battleId].opponentMovesHash;
             }
             
-            /** @dev _validateMonsterOwner has been removed as correct pass
-            *   phrase will provide adequit protection.
-            */
-
             require(_validateBattleMovesFromHash(
                 storedMovesHash,
                 passPhrase,
@@ -143,9 +143,11 @@ contract Battle is Ownable,
                 battleHistory[battleId].opponentMovesArr = movesArr;
             }
             
-            /** @dev Once both participants have revealed their moves, call 
-            *   next function in evaluation procedure
+            /** @dev Each battle is initiated with movesArray length 0.
+            *   This check for length 3 will show that both sets of moves have 
+            *   been revealed.
             */
+
             if (battleHistory[battleId].initiatorMovesArr.length == 3 &&
                 battleHistory[battleId].opponentMovesArr.length == 3) {
                 _evaluateBattleMoves(battleId);
@@ -167,7 +169,7 @@ contract Battle is Ownable,
         require(initiatorArr.length == opponentArr.length, 
         "BATTLE: Lists of moves are not of equal length.");
         
-        for (uint i = 0; i < initiatorArr.length; i ++) {
+        for (uint8 i = 0; i < 2; i ++) {
 
             uint8 initiatorMove = initiatorArr[i];
             uint8 opponentMove = opponentArr[i];
@@ -184,6 +186,7 @@ contract Battle is Ownable,
     *   battle mechanics. It is called internally and will update the 
     *   BattleInfo strucut, then emit an event.
     */
+
     function _updateBattleInfoResult(
         uint8 result, 
         uint256 battleId) 
@@ -196,9 +199,7 @@ contract Battle is Ownable,
     }
 
 
-    /** @dev Consider reordering these functions.
-    *
-    *   @notice The _updateMonsterElo function is fifth step in the battle 
+    /*   @notice The _updateMonsterElo function is fifth step in the battle 
     *   mechanics. It will update the onchain ELO data pertaining to each 
     *   monster. Somewhat akin to an xp value.
     *
@@ -242,12 +243,8 @@ contract Battle is Ownable,
     /** @notice _updateWinner will call a function within the Monster contract
     *   to update the monster's ELO score (on chain data point).
     */
+
     function _updateWinner(uint256 monsterId, uint8 eloIncrease) internal {
         IMonster(monsterContractAddress).updateElo(monsterId, eloIncrease);
     }
-
-/** TODO
-- Implement require in _initiateBattle (check for ownership)
-- Prevent multiple battles
-*/
 }

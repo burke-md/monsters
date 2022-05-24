@@ -157,6 +157,19 @@ set URI
 
     }
 
+    /** @notice checkOwnership is a funtion to be called by the Battle contract
+    *   to insure only the owners of monsters and battling with them.
+    */
+
+    function checkOwnership(
+        address _owner, 
+        uint256 battleId) 
+        external 
+        onlyBattle
+        returns (bool isValid) {
+            
+            return ownerOf(battleId) == _owner;
+    }
 }
 
 
