@@ -124,12 +124,13 @@ contract Monster is ERC721,
     * At this time ELO points will ONLY increment. There is not decrement 
     * functionality.
     *
-    * @ require _updateElo can only be called by the Battle contract. 
+    * @ require updateElo can only be called by the Battle contract. 
     *
     */
 
     function updateElo(uint256 monsterId, uint8 points) external onlyBattle {
-
+        uint currenElo = IdToElo[monsterId];
+        IdToElo[monsterId] = currenElo + points;
     }
 
     /** @notice checkOwnership is a funtion to be called by the Battle contract
