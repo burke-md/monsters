@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 import "./BattleData.sol"; 
 import "./BattleDefinitions.sol";
 
-interface IMonster {
+interface IMonsterValidator {
     
     function checkOwnership(
         address _owner, 
@@ -97,8 +97,10 @@ contract BattleValidators is BattleData {
         uint256 monsterId) 
         internal returns (bool isValid) {
            
-            //IMonster(monsterContractAddress).function(); 
-            isValid = true;
+            isValid = IMonsterValidator(monsterContractAddress).checkOwnership(
+                _caller, 
+                monsterId); 
+
             return isValid;
     } 
 }
