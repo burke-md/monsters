@@ -9,10 +9,12 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./utils/MonsterHelpers.sol";
 import "./utils/UnmintedMonsters.sol";
 import "./utils/RandomNumberVRF.sol";
+import "./utils/MonsterData.sol";
 
 
 interface MonsterInterface {
@@ -20,15 +22,20 @@ interface MonsterInterface {
     function _tokenIdCounterIncrement () external;
 }
 
-contract Monster is ERC721, 
+contract Monster is Ownable,
+    ERC721, 
+    MonsterData,
     ERC721Burnable, 
     ERC721URIStorage, 
     AccessControl,
     MonsterHelpers,
     UnmintedMonsters,
-    RandomNumberVRF {
+    RandomNumberVRF,
+    {
 
   constructor () ERC721("Monster", "MON") {}
+
+  using Counters for Counters.Counter;
 
   uint mintPrice = 0.05 ether;
   uint randNumModulus = 10 ** 12;
@@ -115,7 +122,7 @@ contract Monster is ERC721,
 
     _safeMint(msg.sender, newTokenId);
 
-    IUnmintedMonsters(unMintedMonsterAddr)._tokenIdCounterIncrement();
+    IUnmintedMonsters(unMintedMonsterAddr)._tokenIdCounter.increment();
     IdToElo[newTokenId] = startingElo;
     removeUnmintedId(newTokenId - 1 - IUnmintedMonsters(unMintedMonsterAddr).getMintedCount());
     _setFullTokenURI(newTokenId);
