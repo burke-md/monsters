@@ -166,4 +166,3 @@ contract Monster is ERC721,
 
 
 
-
