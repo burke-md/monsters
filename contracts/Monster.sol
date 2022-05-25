@@ -189,10 +189,4 @@ contract Monster is Ownable,
     function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns (string memory) {
         return super.tokenURI(tokenId);
     }
-/*
-COMMENTED OUT MB -> WHAT ARE WE DOING HERE?
-    function setUnmintedMonsterAddr(address _unMintedMonsterContract) external onlyOwner override {
-       unMintedMonsterAddr = _unMintedMonsterContract;
-    }
-    */
 }
