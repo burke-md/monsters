@@ -28,6 +28,8 @@ contract Monster is ERC721,
     UnmintedMonsters,
     RandomNumberVRF {
 
+  constructor () ERC721("Monster", "MON") {}
+
   uint mintPrice = 0.05 ether;
   uint randNumModulus = 10 ** 12;
   address battleContractAddress;
@@ -45,9 +47,6 @@ contract Monster is ERC721,
                 "MONSTER: Confirm battle address has been set by owner and that this function is only being called from the Battle contract.");
         _;
     }
-
-  constructor () ERC721("Monster", "MON") {}
-
 
   /**
   *
