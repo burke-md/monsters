@@ -12,13 +12,15 @@ contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
 
     uint64 s_subscriptionId = 4941;
     address vrfCoordinator = 0x6168499c0cFfCaCD319c818142124B7A15E857ab;
-    address link = 0x01BE23585060835E02B77ef475b0Cc51aA1e0709;
+    //address link = 0x01BE23585060835E02B77ef475b0Cc51aA1e0709;
     bytes32 keyHash = 0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc;
     uint32 callbackGasLimit = 100000;
     uint16 requestConfirmations = 3;
     uint32 numWords =  1;
-
-    uint256 public s_randomNumber;
+//
+    uint256 public _randomNumber;
+//
+    uint256[] public s_randomWords;
     uint256 public s_requestId;
     address s_owner;
 
@@ -39,13 +41,16 @@ contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
             callbackGasLimit,
             numWords
         );
+
     }
     
     function fulfillRandomWords(
-        //uint256, /* requestId */
         uint256[] memory randomWords) 
-        internal {
-            s_randomNumber = (randomWords[0] % getLengthUnmintedMonsters()) + 1;
+        internal  {
+            s_randomWords = randomWords;
+
+            _randomNumber = (randomWords[0] % getLengthUnmintedMonsters()) + 1;
+         
     }
 
     function setUnmintedMonsterAddr(
@@ -53,4 +58,6 @@ contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
         external onlyOwner{
             unMintedMonsterAddr = _unMintedMonsterContract;
     }
+
+   
 }

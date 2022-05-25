@@ -61,20 +61,21 @@ contract Monster is Ownable,
   function _generateRandNum() internal returns(uint){
     // call vrf
     //vrfFeeEth = SafeMathChainlink.mul(currentPrice());
-    requestRandomWords();
+
     
     //COMMENTED OUT MB s_randomWords throwing error (unidentified)
     /*
        fulfillRandomWords(
-        //s_requestId,
+        s_requestId,
         s_randomWords);
        return s_randomNumber;
     */
+    requestRandomWords();
 
     //uint randNum = vrf();
     // need to find what the vrf function syntax is
     //return randNum % randNumModulus;
-    return 4;
+    return _randomNumber;
   }
 
   function _GenerateNewTokenId() internal returns(uint) {
