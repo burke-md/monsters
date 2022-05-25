@@ -14,7 +14,7 @@ interface IUnmintedMonsters {
 contract RandomNumberVRF is VRFConsumerBaseV2, Ownable {
     VRFCoordinatorV2Interface COORDINATOR;
 
-    uint64 s_subscriptionId = 4941;
+    uint64 s_subscriptionId;
     address vrfCoordinator = 0x6168499c0cFfCaCD319c818142124B7A15E857ab;
     address link = 0x01BE23585060835E02B77ef475b0Cc51aA1e0709;
     bytes32 keyHash = 0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc;
@@ -22,6 +22,7 @@ contract RandomNumberVRF is VRFConsumerBaseV2, Ownable {
     uint16 requestConfirmations = 3;
     uint32 numWords =  1;
 
+    uint256[] public s_randomWords;
     uint256 public s_randomNumber;
     uint256 public s_requestId;
     address s_owner;

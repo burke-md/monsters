@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract UnmintedMonsters{
 
     uint256[] internal unmintedMonsters;
-    uint maxSupply = 10;
+    uint maxSupply = 3;
     using Counters for Counters.Counter;
     Counters.Counter public _tokenIdCounter;
 

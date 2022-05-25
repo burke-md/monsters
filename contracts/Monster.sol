@@ -26,7 +26,7 @@ contract Monster is ERC721,
     AccessControl,
     MonsterHelpers,
     UnmintedMonsters,
-    RandomNumberVRF {
+    RandomNumberVRF(4941) {
 
   uint mintPrice = 0.05 ether;
   uint randNumModulus = 10 ** 12;
@@ -85,7 +85,6 @@ contract Monster is ERC721,
   function _getLevel(uint256 tokenId) public view returns (string memory level) {
 
     uint elo = IdToElo[tokenId];
-    string level;
 
         if (elo < 1000) level = "a";
         else if (elo < 1500) level = "b";
@@ -163,6 +162,7 @@ contract Monster is ERC721,
         address _owner, 
         uint256 monsterId) 
         external 
+        view
         onlyBattle
         returns (bool isValid) {
             
@@ -177,17 +177,5 @@ contract Monster is ERC721,
 
     function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns (string memory) {
         return super.tokenURI(tokenId);
-    }
-
-    function requestRandomWords() internal override{
-      super.requestRandomWords();
-    }
-
-    function fulfillRandomWords (uint256 s_requestId, uint256[] memory s_randomWords) internal override{
-      super.fulfillRandomWords(s_requestId, s_randomWords);
-    }
-
-    function setUnmintedMonsterAddr(address _unMintedMonsterContract) external onlyOwner override {
-       unMintedMonsterAddr = _unMintedMonsterContract;
     }
 }
