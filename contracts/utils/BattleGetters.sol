@@ -2,7 +2,9 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
+
 import "./BattleData.sol";
+import "./BattleDefinitions.sol";
 
 contract BattleGetters is BattleData {
 
@@ -24,25 +26,30 @@ contract BattleGetters is BattleData {
     return battleHistory[battleId].isComplete;
   }
 
-  // @notice The getBattleMovesArr function is a simple getter function.
+    /** @notice The getBattleResult function is a simple getter function.
+    *
+    *   @return string(initiator, opponent, draw).
+    */
+    function getBattleResult 
+        (uint256 battleId) 
+        public 
+        view 
+        returns (string memory) {
+            uint8 val = battleHistory[battleId].result;
 
-  // @returns array of strings [initiatorMove, opponentMove].
+            if (val < 3) return "INITIATOR";
 
-  function getBattleMovesArr (uint256 battleId) public view returns (uint8[] memory) {
+            if (val == 3) return "DRAW";
 
-    uint8[] memory moves = new uint8[](2);
+            if (val > 3) return "OPPONENT";
+    }
 
-    moves[0] = battleHistory[battleId].initiatorMove;
-    moves[1] = battleHistory[battleId].opponentMove;
+    /** @notice getMovesHashCommited returns a boolean value. It will confirm
+    *   if BOTH participants have commited their moves hash.
+    */
+    function getMovesHashCommited (uint battleId) public view returns (bool) {
 
-    return moves;
-  }
-
-  // @notice The getBattleResult function is a simple getter function.
-
-  // @returns string(initator, opponent, draw).
-  
-  function getBattleResult (uint256 battleId) public view returns (string memory) {
-    return battleHistory[battleId].result;
-  }
+        return (battleHistory[battleId].initiatorMovesHash != NULL_BTS32 &&
+                battleHistory[battleId].opponentMovesHash != NULL_BTS32);
+    }
 }

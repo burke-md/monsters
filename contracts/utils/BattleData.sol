@@ -19,4 +19,11 @@ contract BattleData is BattleDefinitions{
   // updated here if required. 
 
   uint8 constant ELO_POINTS_PER_WIN = 100;
+
+    /** monsterContractAddress will be used in main Battle contract as constant
+    *   while calling the updateElo function (which exists in the monster 
+    *   contract). HOWEVER it must first be set after deployment. See
+    *   battleSetters.sol
+    */
+    address monsterContractAddress;
 }

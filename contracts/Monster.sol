@@ -21,35 +21,33 @@ interface Monster {
 }
 
 contract Monster is ERC721, 
-    ERC721Pausable, 
     ERC721Burnable, 
     ERC721URIStorage, 
-    Ownable, 
     AccessControl,
     MonsterHelpers,
     UnmintedMonsters {
- 
-
-  using Counters for Counters.Counter;
-  Counters.Counter private _tokenIdCounter;
 
   uint mintPrice = 0.05 ether;
   uint maxSupply = 3;
   uint randNumModulus = 10 ** 12;
-  address battleContract;
+  address battleContractAddress;
 
-  uint256[] internal unmintedMonsters;
 
   mapping (uint => uint) IdToElo;
 
   event NewMonster(uint monsterId, uint Elo);
-
-  constructor () ERC721("Monster", "MON") {
-
-    for (uint256 i = 0; i < maxSupply; i++) {
-      unmintedMonsters.push(i+1); // index #0 in array will contain unmintedMonster #1 etc.
+        
+    /**
+    *   @notice onlyBattle modifier will ensure only the battle contract calls 
+    *   the update ELO function.
+    */
+    modifier onlyBattle {
+        require(msg.sender == battleContractAddress,
+                "MONSTER: Confirm battle address has been set by owner and that this function is only being called from the Battle contract.");
+        _;
     }
-  } 
+
+  constructor () ERC721("Monster", "MON") {}
 
 
   /**
@@ -143,26 +141,34 @@ contract Monster is ERC721,
       super._burn(tokenId);
   }
 
-  /**
-  *
-  * @notice The _updateElo  function will be made available via the interface. 
-  * It will be called after a battle is resolved to add points to the winner.
-  * At this time ELO points will ONLY increment. There is not decrement 
-  * functionalit 
-  *
-  * @requires _updateElo can only be called by the Battle contract. 
-  *
-  */
+    /**
+    * @notice The _updateElo  function will be made available via the interface. 
+    * It will be called after a battle is resolved to add points to the winner.
+    * At this time ELO points will ONLY increment. There is not decrement 
+    * functionality.
+    *
+    * @ require updateElo can only be called by the Battle contract. 
+    *
+    */
 
-  function updateElo(address winnerMonster, uint8 prebattleELO) external onlyBattle {
-    
+    function updateElo(uint256 monsterId, uint8 points) external onlyBattle {
+        uint currenElo = IdToElo[monsterId];
+        IdToElo[monsterId] = currenElo + points;
+    }
 
-    
+    /** @notice checkOwnership is a funtion to be called by the Battle contract
+    *   to insure only the owners of monsters and battling with them.
+    */
 
-  }
+    function checkOwnership(
+        address _owner, 
+        uint256 monsterId) 
+        external 
+        onlyBattle
+        returns (bool isValid) {
+            
+            if (ownerOf(monsterId) == _owner) return true;
 
+            return false;
+    }
 }
-
-
-
-
