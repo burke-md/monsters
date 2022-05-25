@@ -30,8 +30,7 @@ contract Monster is Ownable,
     AccessControl,
     MonsterHelpers,
     UnmintedMonsters,
-    RandomNumberVRF,
-    {
+    RandomNumberVRF {
 
   constructor () ERC721("Monster", "MON") {}
 
