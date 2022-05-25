@@ -65,13 +65,13 @@ contract Monster is Ownable,
     // call vrf
     //vrfFeeEth = SafeMathChainlink.mul(currentPrice());
     requestRandomWords();
-
-
-    /** @dev commented out -> s_randomNumber throwing compiler error. MB
-    *
-    *
-    *   fulfillRandomWords(s_requestId,s_randomWords);
-    *   return s_randomNumber;
+    
+    //COMMENTED OUT MB s_randomWords throwing error (unidentified)
+    /*
+       fulfillRandomWords(
+        //s_requestId,
+        s_randomWords);
+       return s_randomNumber;
     */
 
     //uint randNum = vrf();
@@ -94,10 +94,10 @@ contract Monster is Ownable,
     return "ipfs/QmZLnaUGeUDm2HJmNeMhPh42GCexHbrQZGdjsTtqjUCGza/";
   }
 
-  function _getLevel(uint256 tokenId) public view returns (string memory level) {
+  function _getLevel(uint256 tokenId) internal view returns (string memory) {
 
     uint elo = IdToElo[tokenId];
-    string level;
+    string memory level;
 
         if (elo < 1000) level = "a";
         else if (elo < 1500) level = "b";
@@ -119,7 +119,7 @@ contract Monster is Ownable,
 
   function mintMonster() public payable whenNotPaused {
     
-    require((IUnmintedMonsters(unMintedMonsterAddr).getMintedCount() + 1) <= maxSupply,
+    require((_tokenIdCounter.current() + 1) <= maxSupply,
             "Monsters: Mint would exceed maxSupply");
     //require(_mintPrice + _vrfFeeEth <= msg.value, "Ether value sent is not correct");
 
@@ -128,9 +128,10 @@ contract Monster is Ownable,
 
     _safeMint(msg.sender, newTokenId);
 
-    IUnmintedMonsters(unMintedMonsterAddr)._tokenIdCounter.increment();
+    _tokenIdCounter.increment();
+
     IdToElo[newTokenId] = startingElo;
-    removeUnmintedId(newTokenId - 1 - IUnmintedMonsters(unMintedMonsterAddr).getMintedCount());
+    removeUnmintedId(newTokenId - 1 - _tokenIdCounter.current());
     _setFullTokenURI(newTokenId);
     emit NewMonster(newTokenId, IdToElo[newTokenId]);
   }
@@ -193,10 +194,6 @@ contract Monster is Ownable,
 
     function requestRandomWords() internal override{
       super.requestRandomWords();
-    }
-
-    function fulfillRandomWords (uint256 s_requestId, uint256[] memory s_randomWords) internal override{
-      super.fulfillRandomWords(s_requestId, s_randomWords);
     }
 
     function setUnmintedMonsterAddr(address _unMintedMonsterContract) external onlyOwner override {

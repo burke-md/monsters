@@ -41,9 +41,4 @@ contract UnmintedMonsters is MonsterData {
         }
         unmintedMonsters.pop();
     }
-/*
-    function _tokenIdCounterIncrement () public {
-        _tokenIdCounter.increment();
-    }
-   */
 }

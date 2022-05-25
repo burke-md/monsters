@@ -9,8 +9,6 @@ import "./MonsterData.sol";
 
 interface IUnmintedMonsters {
     function getLengthUnmintedMonsters() external view returns(uint);
-//    function getMintedCount() external view returns(uint);
- //   function _tokenIdCounterIncrement () external;
 }
 
 contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
@@ -50,7 +48,7 @@ contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
     function fulfillRandomWords(
         //uint256, /* requestId */
         uint256[] memory randomWords) 
-        internal override {
+        internal {
             s_randomNumber = (randomWords[0] % IUnmintedMonsters(unMintedMonsterAddr).getLengthUnmintedMonsters()) + 1;
     }
 
