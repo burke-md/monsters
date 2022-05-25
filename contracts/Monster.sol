@@ -19,7 +19,7 @@ import "./utils/MonsterData.sol";
 
 interface MonsterInterface {
     function _updateElo(address monster, uint8 points) external;
-    function _tokenIdCounterIncrement () external;
+//    function _tokenIdCounterIncrement () external;
 }
 
 contract Monster is Ownable,
@@ -66,11 +66,18 @@ contract Monster is Ownable,
     //vrfFeeEth = SafeMathChainlink.mul(currentPrice());
     requestRandomWords();
 
-    fulfillRandomWords(s_requestId,s_randomWords);
-    return s_randomNumber;
+
+    /** @dev commented out -> s_randomNumber throwing compiler error. MB
+    *
+    *
+    *   fulfillRandomWords(s_requestId,s_randomWords);
+    *   return s_randomNumber;
+    */
+
     //uint randNum = vrf();
     // need to find what the vrf function syntax is
     //return randNum % randNumModulus;
+    return 4;
   }
 
   function _GenerateNewTokenId() internal returns(uint) {

@@ -5,13 +5,15 @@ import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+import "./MonsterData.sol";
+
 interface IUnmintedMonsters {
     function getLengthUnmintedMonsters() external view returns(uint);
-    function getMintedCount() external view returns(uint);
-    function _tokenIdCounterIncrement () external;
+//    function getMintedCount() external view returns(uint);
+ //   function _tokenIdCounterIncrement () external;
 }
 
-contract RandomNumberVRF is VRFConsumerBaseV2, Ownable {
+contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
     VRFCoordinatorV2Interface COORDINATOR;
 
     uint64 s_subscriptionId = 4941;
@@ -46,13 +48,15 @@ contract RandomNumberVRF is VRFConsumerBaseV2, Ownable {
     }
     
     function fulfillRandomWords(
-        uint256, /* requestId */
-        uint256[] memory randomWords
-    ) internal override {
-        s_randomNumber = (randomWords[0] % IUnmintedMonsters(unMintedMonsterAddr).getLengthUnmintedMonsters()) + 1;
+        //uint256, /* requestId */
+        uint256[] memory randomWords) 
+        internal override {
+            s_randomNumber = (randomWords[0] % IUnmintedMonsters(unMintedMonsterAddr).getLengthUnmintedMonsters()) + 1;
     }
 
-    function setUnmintedMonsterAddr(address _unMintedMonsterContract) external onlyOwner {
-       unMintedMonsterAddr = _unMintedMonsterContract;
+    function setUnmintedMonsterAddr(address _unMintedMonsterContract) 
+        external 
+        onlyOwner {
+            unMintedMonsterAddr = _unMintedMonsterContract;
     }
 }
