@@ -99,7 +99,7 @@ contract Monster is ERC721,
     string memory folderURI = super.tokenURI(tokenId);
     string memory level = _getLevel(tokenId);
 
-    string memory fullTokenURI = string(abi.encodePacked(folderURI, "/", level, ".png")); 
+    string memory fullTokenURI = string(abi.encodePacked(folderURI, "/", level, ".png"));
 
     _setTokenURI(tokenId, fullTokenURI);
 
