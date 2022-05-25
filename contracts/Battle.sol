@@ -46,7 +46,7 @@ contract Battle is Ownable,
                 opponentMovesHash: NULL_BTS32,
                 initiatorMovesArr: new uint8[](0),
                 opponentMovesArr: new uint8[](0),
-                result: 3
+                result: 4
             });
 
             battleHistory[_battleId.current()] = battleSet;
@@ -161,7 +161,7 @@ contract Battle is Ownable,
     */
 
     function _evaluateBattleMoves(uint256 battleId) internal {
-        uint8 result = 3;
+        uint8 _result = 4;
         
         uint8[] memory initiatorArr = battleHistory[battleId].initiatorMovesArr;
         uint8[] memory opponentArr =  battleHistory[battleId].opponentMovesArr;
@@ -175,11 +175,11 @@ contract Battle is Ownable,
             uint8 opponentMove = opponentArr[i];
             
             if (initiatorMove < opponentMove && 
-                opponentMove != 0) result -= 1;
-            if (initiatorMove > opponentMove) result += 1;
+                opponentMove != 0) _result -= 1;
+            if (initiatorMove > opponentMove) _result += 1;
         }
 
-            _updateBattleInfoResult(result, battleId);
+            _updateBattleInfoResult(_result, battleId);
     }
 
     /** @notice The _updateBattleInfoResult function is the fourth step in the 
@@ -188,14 +188,14 @@ contract Battle is Ownable,
     */
 
     function _updateBattleInfoResult(
-        uint8 result, 
+        uint8 _result, 
         uint256 battleId) 
         internal {
 
-        battleHistory[battleId].result = result;
+        battleHistory[battleId].result = _result;
 
-        emit CompletedEvaluation(battleId, result);
-        _evaluateMonsterElo(battleId, result);
+        emit CompletedEvaluation(battleId, _result);
+        _evaluateMonsterElo(battleId, _result);
     }
 
 
@@ -203,9 +203,9 @@ contract Battle is Ownable,
     *   mechanics. It will update the onchain ELO data pertaining to each 
     *   monster. Somewhat akin to an xp value.
     *
-    *   @param result should be within the range of 1-5 (inclusive). 
-    *   Where 3 is neutral, a draw. 5 would assign two wins to the opponent, 
-    *   while 1 would assign two wins to the initiator.
+    *   @param result should be within the range of 1-7 (inclusive). 
+    *   Where 4 is neutral, a draw. 7 would assign three wins to the opponent, 
+    *   while 3 would assign three wins to the initiator.
     *
     *   INITIATOR 2 wins <-- 1 win <-- draw --> 1 win --> 2 wins OPPONENT
     */
@@ -220,20 +220,20 @@ contract Battle is Ownable,
         uint256 initiatorMonster = battleHistory[battleId].initiator;
         uint256 opponentMonster = battleHistory[battleId].opponent;
 
-        if (result == 3) {
+        if (result == 4) {
             outcome = "DRAW";
             eloIncrease = 0;
         }
 
-        if (result > 3) {
+        if (result > 4) {
             outcome = "OPPONENT"; 
-            eloIncrease = (result - 3) *  ELO_POINTS_PER_WIN;
+            eloIncrease = (result - 4) *  ELO_POINTS_PER_WIN;
             _updateWinner(opponentMonster, eloIncrease);
         }
 
-        if (result < 3) {
+        if (result < 4) {
             outcome = "INITIATOR";
-            eloIncrease = (3 - result) *  ELO_POINTS_PER_WIN;
+            eloIncrease = (4 - result) *  ELO_POINTS_PER_WIN;
             _updateWinner(initiatorMonster, eloIncrease);
         }
 

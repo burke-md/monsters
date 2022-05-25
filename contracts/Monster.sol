@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "./utils/MonsterHelpers.sol";
@@ -67,7 +68,6 @@ contract Monster is ERC721,
     //return randNum % randNumModulus;
   }
 
-
   function _GenerateNewTokenId() internal returns(uint) {
   
     uint randNum = _generateRandNum();
@@ -78,6 +78,32 @@ contract Monster is ERC721,
     return tokenId;
   }
 
+  function _baseURI() internal pure override returns (string memory) {
+    return "ipfs/QmZLnaUGeUDm2HJmNeMhPh42GCexHbrQZGdjsTtqjUCGza/";
+  }
+
+  function _getLevel(uint256 tokenId) public view returns (string memory level) {
+
+    uint elo = IdToElo[tokenId];
+    string level;
+
+        if (elo < 1000) level = "a";
+        else if (elo < 1500) level = "b";
+        else level = "c";
+
+    return level;
+  }
+
+  function _setFullTokenURI(uint tokenId) internal {
+
+    string memory folderURI = super.tokenURI(tokenId);
+    string memory level = _getLevel(tokenId);
+
+    string memory fullTokenURI = string(abi.encodePacked(folderURI, "/", level, ".png")); 
+
+    _setTokenURI(tokenId, fullTokenURI);
+
+  }
 
   function mintMonster() public payable whenNotPaused {
     
@@ -93,29 +119,26 @@ contract Monster is ERC721,
     IUnmintedMonsters(unMintedMonsterAddr)._tokenIdCounterIncrement();
     IdToElo[newTokenId] = startingElo;
     removeUnmintedId(newTokenId - 1 - IUnmintedMonsters(unMintedMonsterAddr).getMintedCount());
-
+    _setFullTokenURI(newTokenId);
     emit NewMonster(newTokenId, IdToElo[newTokenId]);
   }
 
   function _beforeTokenTransfer(address from, address to, uint256 tokenId)
-  internal
-  whenNotPaused
-  override
+    internal
+    whenNotPaused
+    override
   {
     super._beforeTokenTransfer(from, to, tokenId);
   }
 
-  /*
-  set URI
-  */
 
   function _burn(uint256 tokenId) 
     internal 
     override 
     (ERC721, ERC721URIStorage) 
-    {
+  {
       super._burn(tokenId);
-    }
+  }
 
     /**
     * @notice The _updateElo  function will be made available via the interface. 
@@ -123,12 +146,13 @@ contract Monster is ERC721,
     * At this time ELO points will ONLY increment. There is not decrement 
     * functionality.
     *
-    * @ require _updateElo can only be called by the Battle contract. 
+    * @ require updateElo can only be called by the Battle contract. 
     *
     */
 
     function updateElo(uint256 monsterId, uint8 points) external onlyBattle {
-
+        uint currenElo = IdToElo[monsterId];
+        IdToElo[monsterId] = currenElo + points;
     }
 
     /** @notice checkOwnership is a funtion to be called by the Battle contract
