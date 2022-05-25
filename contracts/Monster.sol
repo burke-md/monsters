@@ -12,14 +12,12 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./utils/MonsterHelpers.sol";
-import "./utils/UnmintedMonsters.sol";
 import "./utils/RandomNumberVRF.sol";
 import "./utils/MonsterData.sol";
 
 
 interface MonsterInterface {
     function _updateElo(address monster, uint8 points) external;
-//    function _tokenIdCounterIncrement () external;
 }
 
 contract Monster is Ownable,
@@ -29,7 +27,6 @@ contract Monster is Ownable,
     ERC721URIStorage, 
     AccessControl,
     MonsterHelpers,
-    UnmintedMonsters,
     RandomNumberVRF {
 
   constructor () ERC721("Monster", "MON") {}
@@ -191,12 +188,10 @@ contract Monster is Ownable,
     function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns (string memory) {
         return super.tokenURI(tokenId);
     }
-
-    function requestRandomWords() internal override{
-      super.requestRandomWords();
-    }
-
+/*
+COMMENTED OUT MB -> WHAT ARE WE DOING HERE?
     function setUnmintedMonsterAddr(address _unMintedMonsterContract) external onlyOwner override {
        unMintedMonsterAddr = _unMintedMonsterContract;
     }
+    */
 }
