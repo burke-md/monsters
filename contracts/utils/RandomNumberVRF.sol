@@ -7,6 +7,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 interface IUnmintedMonsters {
     function getLengthUnmintedMonsters() external view returns(uint);
+    function getMintedCount() external view returns(uint);
+    function _tokenIdCounterIncrement () external;
 }
 
 contract RandomNumberVRF is VRFConsumerBaseV2, Ownable {
@@ -18,9 +20,8 @@ contract RandomNumberVRF is VRFConsumerBaseV2, Ownable {
     bytes32 keyHash = 0xd89b2bf150e3b9e13446986e571fb9cab24b13cea0a43ea20a6049a85cc807cc;
     uint32 callbackGasLimit = 100000;
     uint16 requestConfirmations = 3;
-    uint32 numWords =  2;
+    uint32 numWords =  1;
 
-    uint256[] public s_randomWords;
     uint256 public s_randomNumber;
     uint256 public s_requestId;
     address s_owner;
@@ -33,7 +34,7 @@ contract RandomNumberVRF is VRFConsumerBaseV2, Ownable {
         s_subscriptionId = subscriptionId;
     }
 
-    function requestRandomWords() external onlyOwner {
+    function requestRandomWords() internal onlyOwner {
         // Will revert if subscription is not set and funded.
         s_requestId = COORDINATOR.requestRandomWords(
             keyHash,

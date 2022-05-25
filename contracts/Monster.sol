@@ -11,16 +11,11 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "./utils/MonsterHelpers.sol";
 import "./utils/UnmintedMonsters.sol";
-
+import "./utils/RandomNumberVRF.sol";
 
 
 interface MonsterInterface {
     function _updateElo(address monster, uint8 points) external;
-    function _tokenIdCounterIncrement () external;
-}
-
-interface IUnmintedMonsters {
-    function getMintedCount() external view returns(uint);
     function _tokenIdCounterIncrement () external;
 }
 
@@ -29,12 +24,12 @@ contract Monster is ERC721,
     ERC721URIStorage, 
     AccessControl,
     MonsterHelpers,
-    UnmintedMonsters {
+    UnmintedMonsters,
+    RandomNumberVRF {
 
   uint mintPrice = 0.05 ether;
   uint randNumModulus = 10 ** 12;
   address battleContractAddress;
-  address unMintedMonsterAddr;
 
   mapping (uint => uint) IdToElo;
 
@@ -61,10 +56,12 @@ contract Monster is ERC721,
   */
 
   function _generateRandNum() internal returns(uint){
-  
     // call vrf
     //vrfFeeEth = SafeMathChainlink.mul(currentPrice());
+    requestRandomWords();
 
+    fulfillRandomWords(s_requestId,s_randomWords);
+    return s_randomNumber;
     //uint randNum = vrf();
     // need to find what the vrf function syntax is
     //return randNum % randNumModulus;
@@ -158,8 +155,15 @@ contract Monster is ERC721,
         return super.tokenURI(tokenId);
     }
 
-    function setUnmintedMonsterAddr(address _unMintedMonsterContract) external onlyOwner {
-        unMintedMonsterAddr = _unMintedMonsterContract;
+    function requestRandomWords() internal override{
+      super.requestRandomWords();
     }
 
+    function fulfillRandomWords (uint256 s_requestId, uint256[] memory s_randomWords) internal override{
+      super.fulfillRandomWords(s_requestId, s_randomWords);
+    }
+
+    function setUnmintedMonsterAddr(address _unMintedMonsterContract) external onlyOwner override {
+       unMintedMonsterAddr = _unMintedMonsterContract;
+    }
 }
