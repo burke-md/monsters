@@ -8,7 +8,7 @@ contract UnmintedMonsters{
     uint256[] internal unmintedMonsters;
     uint maxSupply = 10;
     using Counters for Counters.Counter;
-    Counters.Counter internal _tokenIdCounter;
+    Counters.Counter public _tokenIdCounter;
 
     constructor() {
         for (uint256 i = 0; i < maxSupply; i++) {
@@ -17,7 +17,6 @@ contract UnmintedMonsters{
     }
 
     function getIdUnminted(uint index) public view returns(uint){
-
         uint id = unmintedMonsters[index];
         return id;
     } 
@@ -30,7 +29,7 @@ contract UnmintedMonsters{
         return unmintedMonsters.length;
     }
 
-  function removeUnmintedId(uint index) internal{
+    function removeUnmintedId(uint index) internal{
         if (index >= unmintedMonsters.length) return;
 
         for (uint i = index; i < unmintedMonsters.length-1; i++){
@@ -39,4 +38,7 @@ contract UnmintedMonsters{
         unmintedMonsters.pop();
     }
 
+    function _tokenIdCounterIncrement () public {
+        _tokenIdCounter.increment();
+    }
 }

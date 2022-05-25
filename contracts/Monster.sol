@@ -7,17 +7,21 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "./utils/MonsterHelpers.sol";
-import "./utils/MonsterValidators.sol";
 import "./utils/UnmintedMonsters.sol";
 
 
-interface Monster {
 
-  function _updateElo(address monster, uint8 points) external onlyBattle;
+interface MonsterInterface {
+    function _updateElo(address monster, uint8 points) external;
+    function _tokenIdCounterIncrement () external;
+}
+
+interface IUnmintedMonsters {
+    function getMintedCount() external view returns(uint);
+    function _tokenIdCounterIncrement () external;
 }
 
 contract Monster is ERC721, 
@@ -25,14 +29,12 @@ contract Monster is ERC721,
     ERC721URIStorage, 
     AccessControl,
     MonsterHelpers,
-    MonsterValidators,
     UnmintedMonsters {
 
   uint mintPrice = 0.05 ether;
-  uint maxSupply = 10;
   uint randNumModulus = 10 ** 12;
   address battleContractAddress;
-
+  address unMintedMonsterAddr;
 
   mapping (uint => uint) IdToElo;
 
@@ -82,7 +84,7 @@ contract Monster is ERC721,
 
   function mintMonster() public payable whenNotPaused {
     
-    require((_tokenIdCounter.current() + 1) <= maxSupply,
+    require((IUnmintedMonsters(unMintedMonsterAddr).getMintedCount() + 1) <= maxSupply,
             "Monsters: Mint would exceed maxSupply");
     //require(_mintPrice + _vrfFeeEth <= msg.value, "Ether value sent is not correct");
 
@@ -91,9 +93,9 @@ contract Monster is ERC721,
 
     _safeMint(msg.sender, newTokenId);
 
-    _tokenIdCounter.increment();
+    IUnmintedMonsters(unMintedMonsterAddr)._tokenIdCounterIncrement();
     IdToElo[newTokenId] = startingElo;
-    removeUnmintedId(newTokenId - 1 - idCounter);
+    removeUnmintedId(newTokenId - 1 - IUnmintedMonsters(unMintedMonsterAddr).getMintedCount());
 
     emit NewMonster(newTokenId, IdToElo[newTokenId]);
   }
@@ -147,4 +149,17 @@ contract Monster is ERC721,
 
             return false;
     }
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns (string memory) {
+        return super.tokenURI(tokenId);
+    }
+
+    function setUnmintedMonsterAddr(address _unMintedMonsterContract) external onlyOwner {
+        unMintedMonsterAddr = _unMintedMonsterContract;
+    }
+
 }
