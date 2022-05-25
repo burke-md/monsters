@@ -13,13 +13,14 @@ contract MonsterHelpers is Ownable, Pausable{
     function unpause() public onlyOwner {
         _unpause();
     }
-    
+/*    
     function tokenURI(uint256 _tokenId)
-    public
-    view
-    override(ERC721, ERC721URIStorage)
-    returns (string memory)
-    {
-      return super.tokenURI(_tokenId)
+        public
+        view
+        override(ERC721, ERC721URIStorage)
+        returns (string memory) {
+
+          return super.tokenURI(_tokenId);
     }
+   */
 }
