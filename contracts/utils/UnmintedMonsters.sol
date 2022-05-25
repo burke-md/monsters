@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-Pragma solidity ^0.8.4;
+pragma solidity ^0.8.4;
 
 
 contract UnmintedMonsters{

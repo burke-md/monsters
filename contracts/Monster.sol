@@ -8,10 +8,10 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "./utils/MonsterHelpers.sol";
-import "./utils/MonsterValidators.sol";
 import "./utils/UnmintedMonsters.sol";
 
 
@@ -27,7 +27,6 @@ contract Monster is ERC721,
     Ownable, 
     AccessControl,
     MonsterHelpers,
-    MonsterValidators,
     UnmintedMonsters {
  
 
@@ -35,9 +34,9 @@ contract Monster is ERC721,
   Counters.Counter private _tokenIdCounter;
 
   uint mintPrice = 0.05 ether;
-  uint maxSupply = 10;
+  uint maxSupply = 3;
   uint randNumModulus = 10 ** 12;
-  address battleContract address;
+  address battleContract;
 
   uint256[] internal unmintedMonsters;
 
@@ -70,7 +69,6 @@ contract Monster is ERC721,
     //return randNum % randNumModulus;
   }
 
-
   function _GenerateNewTokenId() internal returns(uint) {
   
     uint randNum = _generateRandNum();
@@ -82,15 +80,31 @@ contract Monster is ERC721,
   }
 
   function _baseURI() internal pure override returns (string memory) {
-    return "ipfs://QmVCNF9M7ABGBSLkmAvamjfNs8cNdCctwr2W9Us1S6TWyF/";
+    return "ipfs/QmZLnaUGeUDm2HJmNeMhPh42GCexHbrQZGdjsTtqjUCGza/";
   }
 
-  function appendJsonSuffix(uint256 tokenId) internal {
-    string memory numTokenId = Strings.toString(tokenId);
-    string memory suffix = string(abi.encodePacked(numTokenId, ".json"));
-    _setTokenURI(tokenId, suffix);
+  function _getLevel(uint256 tokenId) public view returns (string memory level) {
+
+    uint elo = IdToElo[tokenId];
+    string level;
+
+        if (elo < 1000) level = "a";
+        else if (elo < 1500) level = "b";
+        else level = "c";
+
+    return level;
   }
 
+  function _setFullTokenURI(uint tokenId) internal {
+
+    string memory folderURI = super.tokenURI(tokenId);
+    string memory level = _getLevel(tokenId);
+
+    string memory fullTokenURI = string(abi.encodePacked(folderURI, "/", level, ".png")); 
+
+    _setTokenURI(tokenId, fullTokenURI);
+
+  }
 
   function mintMonster() public payable whenNotPaused {
     
@@ -102,11 +116,12 @@ contract Monster is ERC721,
     uint newTokenId = _GenerateNewTokenId();
 
     _safeMint(msg.sender, newTokenId);
-    appendJsonSuffix(newTokenId);
 
     _tokenIdCounter.increment();
     IdToElo[newTokenId] = startingElo;
-    removeUnmintedId(newTokenId - 1 - idCounter);
+    removeUnmintedId(newTokenId - 1 - _tokenIdCounter);
+
+    _setFullTokenURI(newTokenId);
 
     emit NewMonster(newTokenId, IdToElo[newTokenId]);
   }
@@ -116,8 +131,9 @@ contract Monster is ERC721,
     whenNotPaused
     override
   {
-    super._beforeTokenTransfer(from, to, tokenId)
+    super._beforeTokenTransfer(from, to, tokenId);
   }
+
 
   function _burn(uint256 tokenId) 
     internal 
@@ -138,10 +154,13 @@ contract Monster is ERC721,
   *
   */
 
-  function _updateElo(address monster, uint8 points) external onlyBattle {
+  function updateElo(address winnerMonster, uint8 prebattleELO) external onlyBattle {
     
+
+    
+
   }
-*/
+
 }
 
 

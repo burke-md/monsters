@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-Pragma solidity ^0.8.4;
+pragma solidity ^0.8.4;
 
 
 contract MonsterHelpers{
@@ -12,4 +12,12 @@ contract MonsterHelpers{
         _unpause();
     }
     
+    function tokenURI(uint256 _tokenId)
+    public
+    view
+    override(ERC721, ERC721URIStorage)
+    returns (string memory)
+    {
+      return super.tokenURI(_tokenId)
+    }
 }
