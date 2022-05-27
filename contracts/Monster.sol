@@ -15,11 +15,6 @@ import "./utils/MonsterHelpers.sol";
 import "./utils/RandomNumberVRF.sol";
 import "./utils/MonsterData.sol";
 
-
-interface MonsterInterface {
-    function _updateElo(address monster, uint8 points) external;
-}
-
 contract Monster is Ownable,
     ERC721, 
     MonsterData,
@@ -27,12 +22,12 @@ contract Monster is Ownable,
     ERC721URIStorage, 
     AccessControl,
     MonsterHelpers,
-    RandomNumberVRF {
+    UnmintedMonsters {
 
-  constructor () ERC721("Monster", "MON") {}
+    constructor () ERC721("Monster", "MON") {}
 
-  using Counters for Counters.Counter;
-
+    using Counters for Counters.Counter; 
+    
   uint mintPrice = 0.05 ether;
   uint randNumModulus = 10 ** 12;
   address battleContractAddress;
@@ -47,25 +42,24 @@ contract Monster is Ownable,
     */
     modifier onlyBattle {
         require(msg.sender == battleContractAddress,
-                "MONSTER: Confirm battle address has been set by owner and that this function is only being called from the Battle contract.");
+            "MONSTER: Confirm battle address has been set by owner and that this function is only being called from the Battle contract.");
         _;
     }
 
-  /**
-  *
-  * @dev SetBattleContract will be used to insert the contract address, which 
-  * will only be known after deployment.
-  *
-  */
+    /**
+    *
+    * @dev SetBattleContract will be used to insert the contract address, which 
+    * will only be known after deployment.
+    */
 
-  function _generateRandNum() internal returns(uint){
-    requestRandomWords();
+    function _generateRandNum() internal returns(uint){
+        requestRandomWords();
 
     //uint randNum = vrf();
     // need to find what the vrf function syntax is
     //return randNum % randNumModulus;
-    return _randomNumber;
-  }
+        return _randomNumber;
+    }
 
   function _GenerateNewTokenId() internal returns(uint) {
   
@@ -110,27 +104,19 @@ contract Monster is Ownable,
             "Monsters: Mint would exceed maxSupply");
     //require(_mintPrice + _vrfFeeEth <= msg.value, "Ether value sent is not correct");
 
-    uint startingElo = 600;
     uint newTokenId = _GenerateNewTokenId();
 
     _safeMint(msg.sender, newTokenId);
 
     _tokenIdCounter.increment();
-
     IdToElo[newTokenId] = startingElo;
     removeUnmintedId(newTokenId - 1 - _tokenIdCounter.current());
+
     _setFullTokenURI(newTokenId);
+    
     emit NewMonster(newTokenId, IdToElo[newTokenId]);
   }
-
-  function _beforeTokenTransfer(address from, address to, uint256 tokenId)
-    internal
-    whenNotPaused
-    override
-  {
-    super._beforeTokenTransfer(from, to, tokenId);
-  }
-
+ 
 
   function _burn(uint256 tokenId) 
     internal 
@@ -162,7 +148,7 @@ contract Monster is Ownable,
     function checkOwnership(
         address _owner, 
         uint256 monsterId) 
-        external 
+        external view
         onlyBattle
         returns (bool isValid) {
             
@@ -171,11 +157,24 @@ contract Monster is Ownable,
             return false;
     }
 
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
-        return super.supportsInterface(interfaceId);
+//---------------------------------------------------------------------------\\
+//------------------------------Overrides------------------------------------\\
+
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+        internal
+        whenNotPaused
+        override {
+            super._beforeTokenTransfer(from, to, tokenId);
     }
 
-    function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns (string memory) {
+    function supportsInterface(bytes4 interfaceId) 
+        public view virtual override(
+        ERC721, AccessControl) 
+        returns (bool) {
+            return super.supportsInterface(interfaceId);
+    }
+
+    function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns(string memory) {
         return super.tokenURI(tokenId);
     }
 }
