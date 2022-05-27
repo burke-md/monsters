@@ -11,6 +11,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "./utils/MonsterHelpers.sol";
+import "./utils/MonsterData.sol";
 import "./utils/UnmintedMonsters.sol";
 
 contract Monster is ERC721, 
@@ -21,7 +22,6 @@ contract Monster is ERC721,
     UnmintedMonsters {
 
   uint mintPrice = 0.05 ether;
-  uint maxSupply = 10;
   uint randNumModulus = 10 ** 12;
   address battleContractAddress;
 
@@ -36,7 +36,7 @@ contract Monster is ERC721,
     */
     modifier onlyBattle {
         require(msg.sender == battleContractAddress,
-                "MONSTER: Confirm battle address has been set by owner and that this function is only being called from the Battle contract.");
+            "MONSTER: Confirm battle address has been set by owner and that this function is only being called from the Battle contract.");
         _;
     }
 
@@ -74,7 +74,7 @@ contract Monster is ERC721,
 
   function mintMonster() public payable whenNotPaused {
     
-    require((_tokenIdCounter.current() + 1) <= maxSupply,
+    require((_tokenIdCounter.current() + 1) <= MonsterData.maxSupply,
             "Monsters: Mint would exceed maxSupply");
     //require(_mintPrice + _vrfFeeEth <= msg.value, "Ether value sent is not correct");
 

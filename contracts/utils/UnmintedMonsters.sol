@@ -2,16 +2,16 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "./MonsterData.sol";
 
 contract UnmintedMonsters{
 
     uint256[] internal unmintedMonsters;
-    uint maxSupply = 10;
     using Counters for Counters.Counter;
     Counters.Counter internal _tokenIdCounter;
 
     constructor() {
-        for (uint256 i = 0; i < maxSupply; i++) {
+        for (uint256 i = 0; i < MonsterData.maxSupply; i++) {
         unmintedMonsters.push(i+1); // index #0 in array will contain unmintedMonster #1 etc.
         }
     }
