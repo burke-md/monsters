@@ -7,14 +7,16 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./utils/MonsterHelpers.sol";
+import "./utils/RandomNumberVRF.sol";
 import "./utils/MonsterData.sol";
-import "./utils/UnmintedMonsters.sol";
 
-contract Monster is ERC721, 
+contract Monster is Ownable,
+    ERC721, 
     MonsterData,
     ERC721Burnable, 
     ERC721URIStorage, 
@@ -30,7 +32,6 @@ contract Monster is ERC721,
   uint randNumModulus = 10 ** 12;
   address battleContractAddress;
 
-
   mapping (uint => uint) IdToElo;
 
   event NewMonster(uint monsterId, uint Elo);
@@ -45,23 +46,20 @@ contract Monster is ERC721,
         _;
     }
 
-  /**
-  *
-  * @dev SetBattleContract will be used to insert the contract address, which 
-  * will only be known after deployment.
-  *
-  */
+    /**
+    *
+    * @dev SetBattleContract will be used to insert the contract address, which 
+    * will only be known after deployment.
+    */
 
-  function _generateRandNum() internal returns(uint){
-  
-    // call vrf
-    //vrfFeeEth = SafeMathChainlink.mul(currentPrice());
+    function _generateRandNum() internal returns(uint){
+        requestRandomWords();
 
     //uint randNum = vrf();
     // need to find what the vrf function syntax is
     //return randNum % randNumModulus;
-  }
-
+        return _randomNumber;
+    }
 
   function _GenerateNewTokenId() internal returns(uint) {
   
@@ -73,6 +71,32 @@ contract Monster is ERC721,
     return tokenId;
   }
 
+  function _baseURI() internal pure override returns (string memory) {
+    return "ipfs/QmZLnaUGeUDm2HJmNeMhPh42GCexHbrQZGdjsTtqjUCGza/";
+  }
+
+  function _getLevel(uint256 tokenId) internal view returns (string memory) {
+
+    uint elo = IdToElo[tokenId];
+    string memory level;
+
+        if (elo < 1000) level = "a";
+        else if (elo < 1500) level = "b";
+        else level = "c";
+
+    return level;
+  }
+
+  function _setFullTokenURI(uint tokenId) internal {
+
+    string memory folderURI = super.tokenURI(tokenId);
+    string memory level = _getLevel(tokenId);
+
+    string memory fullTokenURI = string(abi.encodePacked(folderURI, "/", level, ".png"));
+
+    _setTokenURI(tokenId, fullTokenURI);
+
+  }
 
   function mintMonster() public payable whenNotPaused {
     
@@ -80,7 +104,6 @@ contract Monster is ERC721,
             "Monsters: Mint would exceed maxSupply");
     //require(_mintPrice + _vrfFeeEth <= msg.value, "Ether value sent is not correct");
 
-    uint startingElo = 600;
     uint newTokenId = _GenerateNewTokenId();
 
     _safeMint(msg.sender, newTokenId);
@@ -89,6 +112,8 @@ contract Monster is ERC721,
     IdToElo[newTokenId] = startingElo;
     removeUnmintedId(newTokenId - 1 - _tokenIdCounter.current());
 
+    _setFullTokenURI(newTokenId);
+    
     emit NewMonster(newTokenId, IdToElo[newTokenId]);
   }
  
@@ -97,9 +122,9 @@ contract Monster is ERC721,
     internal 
     override 
     (ERC721, ERC721URIStorage) 
-    {
+  {
       super._burn(tokenId);
-    }
+  }
 
     /**
     * @notice The _updateElo  function will be made available via the interface. 
