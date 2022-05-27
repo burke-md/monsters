@@ -123,7 +123,7 @@ contract Monster is ERC721,
     function checkOwnership(
         address _owner, 
         uint256 monsterId) 
-        external 
+        external view
         onlyBattle
         returns (bool isValid) {
             
