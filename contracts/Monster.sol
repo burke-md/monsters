@@ -13,18 +13,11 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./utils/MonsterHelpers.sol";
 import "./utils/UnmintedMonsters.sol";
 
-
-interface Monster {
-
-  function _updateElo(address monster, uint8 points) external onlyBattle;
-}
-
 contract Monster is ERC721, 
     ERC721Burnable, 
     ERC721URIStorage, 
     AccessControl,
     MonsterHelpers,
-    MonsterValidators,
     UnmintedMonsters {
 
   uint mintPrice = 0.05 ether;
