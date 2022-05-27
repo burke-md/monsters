@@ -8,7 +8,6 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./utils/MonsterHelpers.sol";
@@ -20,7 +19,6 @@ abstract contract Monster is Ownable,
     MonsterData,
     ERC721Burnable, 
     ERC721URIStorage, 
-    AccessControl,
     MonsterHelpers,
     RandomNumberVRF {
 
@@ -152,13 +150,6 @@ abstract contract Monster is Ownable,
         whenNotPaused
         override {
             super._beforeTokenTransfer(from, to, tokenId);
-    }
-
-    function supportsInterface(bytes4 interfaceId) 
-        public view virtual override(
-        ERC721, AccessControl) 
-        returns (bool) {
-            return super.supportsInterface(interfaceId);
     }
 
     function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns(string memory) {
