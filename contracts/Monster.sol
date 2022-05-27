@@ -25,84 +25,79 @@ abstract contract Monster is Ownable,
     constructor () ERC721("Monster", "MON") {}
 
     using Counters for Counters.Counter; 
-    
     event NewMonster(uint monsterId, uint Elo);
-        
+    
+    //---------------------------------------------------------------------------\\
+    //-----------------------------Access Control--------------------------------\\
+
     /**
     *   @notice onlyBattle modifier will ensure only the battle contract calls 
     *   the update ELO function.
     */
+
     modifier onlyBattle {
         require(msg.sender == battleContractAddress,
             "MONSTER: Confirm battle address has been set by owner and that this function is only being called from the Battle contract.");
         _;
     }
 
-    /**
-    *
-    * @dev SetBattleContract will be used to insert the contract address, which 
-    * will only be known after deployment.
-    */
+    //---------------------------------------------------------------------------\\
+    //---------------------------------------------------------------------------\\
+
+     function mintMonster() public payable whenNotPaused {
+
+        require((_tokenIdCounter.current() + 1) <= maxSupply,
+                "MONSTERS: Mint would exceed maxSupply");
+
+        uint newTokenId = _GenerateNewTokenId();
+
+        _safeMint(msg.sender, newTokenId);
+
+        _tokenIdCounter.increment();
+        IdToElo[newTokenId] = startingElo;
+        removeUnmintedId(newTokenId - 1 - _tokenIdCounter.current());
+
+        _setFullTokenURI(newTokenId);
+
+        emit NewMonster(newTokenId, IdToElo[newTokenId]);
+    }
 
     function _generateRandNum() internal returns(uint){
         requestRandomWords();
         return _randomNumber;
     }
 
-  function _GenerateNewTokenId() internal returns(uint) {
-  
-    uint randNum = _generateRandNum();
+    function _GenerateNewTokenId() internal returns(uint) {
 
-    uint tokenIndex = (randNum / randNumModulus) * (unmintedMonsters.length); // range: 0 to (unmintedMonsters.length - 1)
-    uint tokenId = unmintedMonsters[tokenIndex];
+        uint randNum = _generateRandNum();
+        uint tokenIndex = (randNum / randNumModulus) * (unmintedMonsters.length); // range: 0 to (unmintedMonsters.length - 1)
+        uint tokenId = unmintedMonsters[tokenIndex];
 
-    return tokenId;
-  }
-
-    function _baseURI() internal pure override returns (string memory) {
-        return "ipfs/QmZLnaUGeUDm2HJmNeMhPh42GCexHbrQZGdjsTtqjUCGza/";
+        return tokenId;
     }
 
-  function _getLevel(uint256 tokenId) internal view returns (string memory) {
+    function _getLevel(uint256 tokenId) internal view returns (string memory) {
 
-    uint elo = IdToElo[tokenId];
-    string memory level;
+        uint elo = IdToElo[tokenId];
+        string memory level;
 
-        if (elo < 1000) level = "a";
-        else if (elo < 1500) level = "b";
-        else level = "c";
+            if (elo < 1000) level = "a";
+            else if (elo < 1500) level = "b";
+            else level = "c";
 
-    return level;
-  }
+        return level;
+    }
 
-  function _setFullTokenURI(uint tokenId) internal {
+    function _setFullTokenURI(uint tokenId) internal {
 
-    string memory folderURI = super.tokenURI(tokenId);
-    string memory level = _getLevel(tokenId);
+        string memory folderURI = super.tokenURI(tokenId);
+        string memory level = _getLevel(tokenId);
 
-    string memory fullTokenURI = string(abi.encodePacked(folderURI, "/", level, ".png"));
+        string memory fullTokenURI = string(abi.encodePacked(folderURI, "/", level, ".png"));
 
-    _setTokenURI(tokenId, fullTokenURI);
+        _setTokenURI(tokenId, fullTokenURI);
 
-  }
-
-  function mintMonster() public payable whenNotPaused {
-    
-    require((_tokenIdCounter.current() + 1) <= maxSupply,
-            "Monsters: Mint would exceed maxSupply");
-
-    uint newTokenId = _GenerateNewTokenId();
-
-    _safeMint(msg.sender, newTokenId);
-
-    _tokenIdCounter.increment();
-    IdToElo[newTokenId] = startingElo;
-    removeUnmintedId(newTokenId - 1 - _tokenIdCounter.current());
-
-    _setFullTokenURI(newTokenId);
-    
-    emit NewMonster(newTokenId, IdToElo[newTokenId]);
-  }
+    }
 
 //---------------------------------------------------------------------------\\
 //--------------------------------External-----------------------------------\\
@@ -162,4 +157,8 @@ abstract contract Monster is Ownable,
         (ERC721, ERC721URIStorage) {
             super._burn(tokenId);
   }
+
+    function _baseURI() internal pure override returns (string memory) {
+        return "ipfs/QmZLnaUGeUDm2HJmNeMhPh42GCexHbrQZGdjsTtqjUCGza/";
+    }
 }
