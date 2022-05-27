@@ -91,18 +91,7 @@ contract Monster is ERC721,
 
     emit NewMonster(newTokenId, IdToElo[newTokenId]);
   }
-
-  function _beforeTokenTransfer(address from, address to, uint256 tokenId)
-  internal
-  whenNotPaused
-  override
-  {
-    super._beforeTokenTransfer(from, to, tokenId);
-  }
-
-  /*
-  set URI
-  */
+ 
 
   function _burn(uint256 tokenId) 
     internal 
@@ -141,5 +130,26 @@ contract Monster is ERC721,
             if (ownerOf(monsterId) == _owner) return true;
 
             return false;
+    }
+
+//---------------------------------------------------------------------------\\
+//------------------------------Overrides------------------------------------\\
+
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+        internal
+        whenNotPaused
+        override {
+            super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId) 
+        public view virtual override(
+        ERC721, AccessControl) 
+        returns (bool) {
+            return super.supportsInterface(interfaceId);
+    }
+
+    function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns(string memory) {
+        return super.tokenURI(tokenId);
     }
 }
