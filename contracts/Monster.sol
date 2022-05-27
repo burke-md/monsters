@@ -15,14 +15,14 @@ import "./utils/MonsterHelpers.sol";
 import "./utils/RandomNumberVRF.sol";
 import "./utils/MonsterData.sol";
 
-contract Monster is Ownable,
+abstract contract Monster is Ownable,
     ERC721, 
     MonsterData,
     ERC721Burnable, 
     ERC721URIStorage, 
     AccessControl,
     MonsterHelpers,
-    UnmintedMonsters {
+    RandomNumberVRF {
 
     constructor () ERC721("Monster", "MON") {}
 

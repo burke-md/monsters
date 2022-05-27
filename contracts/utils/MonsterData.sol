@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
@@ -27,6 +26,7 @@ contract MonsterData {
     uint256[] internal unmintedMonsters;
 
     uint constant startingElo = 600;
+    uint constant maxSupply = 10;
 
     function getIdUnminted(uint index) public view returns(uint){
         uint id = unmintedMonsters[index];

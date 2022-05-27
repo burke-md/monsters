@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "./MonsterData.sol";
 
-contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
+abstract contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
     VRFCoordinatorV2Interface COORDINATOR;
 
     uint64 s_subscriptionId = 4941;
@@ -17,9 +17,9 @@ contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
     uint32 callbackGasLimit = 100000;
     uint16 requestConfirmations = 3;
     uint32 numWords =  1;
-//
+
     uint256 public _randomNumber;
-//
+
     uint256[] public s_randomWords;
     uint256 public s_requestId;
     address s_owner;
@@ -48,7 +48,7 @@ contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
         uint256[] memory randomWords) 
         internal  {
             s_randomWords = randomWords;
-
+    
             _randomNumber = (randomWords[0] % getLengthUnmintedMonsters()) + 1;
          
     }
@@ -58,6 +58,4 @@ contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
         external onlyOwner{
             unMintedMonsterAddr = _unMintedMonsterContract;
     }
-
-   
 }
