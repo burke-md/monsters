@@ -11,7 +11,6 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "./utils/MonsterHelpers.sol";
-import "./utils/MonsterValidators.sol";
 import "./utils/UnmintedMonsters.sol";
 
 
