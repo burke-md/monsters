@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 
 contract MonsterHelpers is Ownable, Pausable{
-
+    
     function pause() public onlyOwner {
         _pause();
     }
@@ -13,14 +13,4 @@ contract MonsterHelpers is Ownable, Pausable{
     function unpause() public onlyOwner {
         _unpause();
     }
-/*    
-    function tokenURI(uint256 _tokenId)
-        public
-        view
-        override(ERC721, ERC721URIStorage)
-        returns (string memory) {
-
-          return super.tokenURI(_tokenId);
-    }
-   */
 }
