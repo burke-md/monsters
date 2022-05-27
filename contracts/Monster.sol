@@ -85,7 +85,7 @@ contract Monster is ERC721,
 
     _tokenIdCounter.increment();
     IdToElo[newTokenId] = startingElo;
-    removeUnmintedId(newTokenId - 1 - idCounter);
+    removeUnmintedId(newTokenId - 1 - _tokenIdCounter);
 
     emit NewMonster(newTokenId, IdToElo[newTokenId]);
   }
