@@ -7,32 +7,35 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./utils/MonsterHelpers.sol";
-import "./utils/MonsterValidators.sol";
-import "./utils/UnmintedMonsters.sol";
+import "./utils/RandomNumberVRF.sol";
+import "./utils/MonsterData.sol";
 
 
-interface Monster {
-
-  function _updateElo(address monster, uint8 points) external onlyBattle;
+interface MonsterInterface {
+    function _updateElo(address monster, uint8 points) external;
 }
 
-contract Monster is ERC721, 
+contract Monster is Ownable,
+    ERC721, 
+    MonsterData,
     ERC721Burnable, 
     ERC721URIStorage, 
     AccessControl,
     MonsterHelpers,
-    MonsterValidators,
-    UnmintedMonsters {
+    RandomNumberVRF {
+
+  constructor () ERC721("Monster", "MON") {}
+
+  using Counters for Counters.Counter;
 
   uint mintPrice = 0.05 ether;
-  uint maxSupply = 10;
   uint randNumModulus = 10 ** 12;
   address battleContractAddress;
-
 
   mapping (uint => uint) IdToElo;
 
@@ -48,9 +51,6 @@ contract Monster is ERC721,
         _;
     }
 
-  constructor () ERC721("Monster", "MON") {}
-
-
   /**
   *
   * @dev SetBattleContract will be used to insert the contract address, which 
@@ -59,15 +59,13 @@ contract Monster is ERC721,
   */
 
   function _generateRandNum() internal returns(uint){
-  
-    // call vrf
-    //vrfFeeEth = SafeMathChainlink.mul(currentPrice());
+    requestRandomWords();
 
     //uint randNum = vrf();
     // need to find what the vrf function syntax is
     //return randNum % randNumModulus;
+    return _randomNumber;
   }
-
 
   function _GenerateNewTokenId() internal returns(uint) {
   
@@ -79,6 +77,32 @@ contract Monster is ERC721,
     return tokenId;
   }
 
+  function _baseURI() internal pure override returns (string memory) {
+    return "ipfs/QmZLnaUGeUDm2HJmNeMhPh42GCexHbrQZGdjsTtqjUCGza/";
+  }
+
+  function _getLevel(uint256 tokenId) internal view returns (string memory) {
+
+    uint elo = IdToElo[tokenId];
+    string memory level;
+
+        if (elo < 1000) level = "a";
+        else if (elo < 1500) level = "b";
+        else level = "c";
+
+    return level;
+  }
+
+  function _setFullTokenURI(uint tokenId) internal {
+
+    string memory folderURI = super.tokenURI(tokenId);
+    string memory level = _getLevel(tokenId);
+
+    string memory fullTokenURI = string(abi.encodePacked(folderURI, "/", level, ".png"));
+
+    _setTokenURI(tokenId, fullTokenURI);
+
+  }
 
   function mintMonster() public payable whenNotPaused {
     
@@ -92,31 +116,29 @@ contract Monster is ERC721,
     _safeMint(msg.sender, newTokenId);
 
     _tokenIdCounter.increment();
-    IdToElo[newTokenId] = startingElo;
-    removeUnmintedId(newTokenId - 1 - idCounter);
 
+    IdToElo[newTokenId] = startingElo;
+    removeUnmintedId(newTokenId - 1 - _tokenIdCounter.current());
+    _setFullTokenURI(newTokenId);
     emit NewMonster(newTokenId, IdToElo[newTokenId]);
   }
 
   function _beforeTokenTransfer(address from, address to, uint256 tokenId)
-  internal
-  whenNotPaused
-  override
+    internal
+    whenNotPaused
+    override
   {
     super._beforeTokenTransfer(from, to, tokenId);
   }
 
-  /*
-  set URI
-  */
 
   function _burn(uint256 tokenId) 
     internal 
     override 
     (ERC721, ERC721URIStorage) 
-    {
+  {
       super._burn(tokenId);
-    }
+  }
 
     /**
     * @notice The _updateElo  function will be made available via the interface. 
@@ -147,5 +169,13 @@ contract Monster is ERC721,
             if (ownerOf(monsterId) == _owner) return true;
 
             return false;
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, AccessControl) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns (string memory) {
+        return super.tokenURI(tokenId);
     }
 }
