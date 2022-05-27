@@ -6,27 +6,35 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract MonsterData {  
     
     constructor() {
-        /** index #0 in array will contain unmintedMonster #1 etc.
-        *   maxSupply is a constant defined in MonsterData.sol
-        */
+    /** index #0 in array will contain unmintedMonster #1 etc.
+    *   maxSupply is a constant defined in MonsterData.sol
+    */
         for (uint256 i = 0; i < maxSupply; i++) {
             unmintedMonsters.push(i+1); 
         }
     }
 
-    using Counters for Counters.Counter;  
-
     /**
     * @notice _tokenIdCounter will be incremented on mint and referenced 
     * throughout.
     */
-    
+    using Counters for Counters.Counter; 
     Counters.Counter internal _tokenIdCounter;
 
     uint256[] internal unmintedMonsters;
 
     uint constant startingElo = 600;
     uint constant maxSupply = 10;
+
+    uint mintPrice = 0.05 ether;
+    uint randNumModulus = 10 ** 12;
+    address battleContractAddress = 0xd66673A2f79cB75244BA7451977dFed5F9aA4df1;
+
+    mapping (uint => uint) IdToElo;
+
+
+//---------------------------------------------------------------------------\\
+//-------------------------------Getters-------------------------------------\\
 
     function getIdUnminted(uint index) public view returns(uint){
         uint id = unmintedMonsters[index];

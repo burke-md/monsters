@@ -28,12 +28,6 @@ abstract contract Monster is Ownable,
 
     using Counters for Counters.Counter; 
     
-    uint mintPrice = 0.05 ether;
-    uint randNumModulus = 10 ** 12;
-    address battleContractAddress = 0xd66673A2f79cB75244BA7451977dFed5F9aA4df1;
-
-    mapping (uint => uint) IdToElo;
-
     event NewMonster(uint monsterId, uint Elo);
         
     /**
@@ -67,9 +61,9 @@ abstract contract Monster is Ownable,
     return tokenId;
   }
 
-  function _baseURI() internal pure override returns (string memory) {
-    return "ipfs/QmZLnaUGeUDm2HJmNeMhPh42GCexHbrQZGdjsTtqjUCGza/";
-  }
+    function _baseURI() internal pure override returns (string memory) {
+        return "ipfs/QmZLnaUGeUDm2HJmNeMhPh42GCexHbrQZGdjsTtqjUCGza/";
+    }
 
   function _getLevel(uint256 tokenId) internal view returns (string memory) {
 
@@ -111,15 +105,9 @@ abstract contract Monster is Ownable,
     
     emit NewMonster(newTokenId, IdToElo[newTokenId]);
   }
- 
 
-  function _burn(uint256 tokenId) 
-    internal 
-    override 
-    (ERC721, ERC721URIStorage) 
-  {
-      super._burn(tokenId);
-  }
+//---------------------------------------------------------------------------\\
+//--------------------------------External-----------------------------------\\
 
     /**
     * @notice The _updateElo  function will be made available via the interface. 
@@ -134,6 +122,9 @@ abstract contract Monster is Ownable,
     function updateElo(uint256 monsterId, uint8 points) external onlyBattle {
         uint currenElo = IdToElo[monsterId];
         IdToElo[monsterId] = currenElo + points;
+
+        //Will check and update level as needed.
+        _setFullTokenURI(monsterId);
     }
 
     /** @notice checkOwnership is a funtion to be called by the Battle contract
@@ -173,4 +164,11 @@ abstract contract Monster is Ownable,
     function tokenURI(uint256 tokenId) public view virtual override(ERC721, ERC721URIStorage) returns(string memory) {
         return super.tokenURI(tokenId);
     }
+
+    function _burn(uint256 tokenId) 
+        internal 
+        override 
+        (ERC721, ERC721URIStorage) {
+            super._burn(tokenId);
+  }
 }
