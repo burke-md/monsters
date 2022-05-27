@@ -1,17 +1,14 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
-
+// SPDX-License-Identifier: MIT 
+pragma solidity ^0.8.4; 
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "./MonsterData.sol";
 
-contract UnmintedMonsters{
-
+contract UnmintedMonsters is MonsterData { 
     uint256[] internal unmintedMonsters;
-    using Counters for Counters.Counter;
-    Counters.Counter internal _tokenIdCounter;
-
+    using Counters for Counters.Counter; 
+    
     constructor() {
-        for (uint256 i = 0; i < MonsterData.maxSupply; i++) {
+        for (uint256 i = 0; i < maxSupply; i++) {
         unmintedMonsters.push(i+1); // index #0 in array will contain unmintedMonster #1 etc.
         }
     }

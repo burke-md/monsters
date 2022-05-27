@@ -15,12 +15,17 @@ import "./utils/MonsterData.sol";
 import "./utils/UnmintedMonsters.sol";
 
 contract Monster is ERC721, 
+    MonsterData,
     ERC721Burnable, 
     ERC721URIStorage, 
     AccessControl,
     MonsterHelpers,
     UnmintedMonsters {
 
+    constructor () ERC721("Monster", "MON") {}
+
+    using Counters for Counters.Counter; 
+    
   uint mintPrice = 0.05 ether;
   uint randNumModulus = 10 ** 12;
   address battleContractAddress;
@@ -39,9 +44,6 @@ contract Monster is ERC721,
             "MONSTER: Confirm battle address has been set by owner and that this function is only being called from the Battle contract.");
         _;
     }
-
-  constructor () ERC721("Monster", "MON") {}
-
 
   /**
   *
@@ -74,7 +76,7 @@ contract Monster is ERC721,
 
   function mintMonster() public payable whenNotPaused {
     
-    require((_tokenIdCounter.current() + 1) <= MonsterData.maxSupply,
+    require((_tokenIdCounter.current() + 1) <= maxSupply,
             "Monsters: Mint would exceed maxSupply");
     //require(_mintPrice + _vrfFeeEth <= msg.value, "Ether value sent is not correct");
 
@@ -85,7 +87,7 @@ contract Monster is ERC721,
 
     _tokenIdCounter.increment();
     IdToElo[newTokenId] = startingElo;
-    removeUnmintedId(newTokenId - 1 - _tokenIdCounter);
+    removeUnmintedId(newTokenId - 1 - _tokenIdCounter.current());
 
     emit NewMonster(newTokenId, IdToElo[newTokenId]);
   }
