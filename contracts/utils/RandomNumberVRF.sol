@@ -24,6 +24,12 @@ abstract contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
     uint256 public s_requestId;
     address s_owner;
 
+    /** @notice RandSet is an event to be emitted upon receiving the VRF 
+    * value from Chainlink.
+    */
+
+    event RandSet();
+
     constructor(uint64 subscriptionId) VRFConsumerBaseV2(vrfCoordinator) {
         COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
         s_owner = msg.sender;
@@ -47,5 +53,6 @@ abstract contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
             s_randomWords = randomWords;
     
             _randomNumber = (randomWords[0] % getLengthUnmintedMonsters()) + 1;    
+            emit RandSet();
     }
 }

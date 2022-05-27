@@ -96,7 +96,6 @@ abstract contract Monster is Ownable,
         string memory fullTokenURI = string(abi.encodePacked(folderURI, "/", level, ".png"));
 
         _setTokenURI(tokenId, fullTokenURI);
-
     }
 
 //---------------------------------------------------------------------------\\
