@@ -62,11 +62,6 @@ abstract contract Monster is Ownable,
         emit NewMonster(newTokenId, IdToElo[newTokenId]);
     }
 
-    function _generateRandNum() internal returns(uint){
-        requestRandomWords();
-        return _randomNumber;
-    }
-
     function _GenerateNewTokenId() internal returns(uint) {
 
         uint randNum = _generateRandNum();
@@ -74,6 +69,11 @@ abstract contract Monster is Ownable,
         uint tokenId = unmintedMonsters[tokenIndex];
 
         return tokenId;
+    }
+
+    function _generateRandNum() internal returns(uint){
+        requestRandomWords();
+        return _randomNumber;
     }
 
     function _getLevel(uint256 tokenId) internal view returns (string memory) {

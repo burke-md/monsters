@@ -24,8 +24,6 @@ abstract contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
     uint256 public s_requestId;
     address s_owner;
 
-    address unMintedMonsterAddr;
-
     constructor(uint64 subscriptionId) VRFConsumerBaseV2(vrfCoordinator) {
         COORDINATOR = VRFCoordinatorV2Interface(vrfCoordinator);
         s_owner = msg.sender;
@@ -41,7 +39,6 @@ abstract contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
             callbackGasLimit,
             numWords
         );
-
     }
     
     function fulfillRandomWords(
@@ -49,13 +46,6 @@ abstract contract RandomNumberVRF is VRFConsumerBaseV2, Ownable, MonsterData {
         internal  {
             s_randomWords = randomWords;
     
-            _randomNumber = (randomWords[0] % getLengthUnmintedMonsters()) + 1;
-         
-    }
-
-    function setUnmintedMonsterAddr(
-        address _unMintedMonsterContract) 
-        external onlyOwner{
-            unMintedMonsterAddr = _unMintedMonsterContract;
+            _randomNumber = (randomWords[0] % getLengthUnmintedMonsters()) + 1;    
     }
 }
