@@ -28,13 +28,13 @@ abstract contract Monster is Ownable,
 
     using Counters for Counters.Counter; 
     
-  uint mintPrice = 0.05 ether;
-  uint randNumModulus = 10 ** 12;
-  address battleContractAddress;
+    uint mintPrice = 0.05 ether;
+    uint randNumModulus = 10 ** 12;
+    address battleContractAddress = 0xd66673A2f79cB75244BA7451977dFed5F9aA4df1;
 
-  mapping (uint => uint) IdToElo;
+    mapping (uint => uint) IdToElo;
 
-  event NewMonster(uint monsterId, uint Elo);
+    event NewMonster(uint monsterId, uint Elo);
         
     /**
     *   @notice onlyBattle modifier will ensure only the battle contract calls 
@@ -54,10 +54,6 @@ abstract contract Monster is Ownable,
 
     function _generateRandNum() internal returns(uint){
         requestRandomWords();
-
-    //uint randNum = vrf();
-    // need to find what the vrf function syntax is
-    //return randNum % randNumModulus;
         return _randomNumber;
     }
 
@@ -102,7 +98,6 @@ abstract contract Monster is Ownable,
     
     require((_tokenIdCounter.current() + 1) <= maxSupply,
             "Monsters: Mint would exceed maxSupply");
-    //require(_mintPrice + _vrfFeeEth <= msg.value, "Ether value sent is not correct");
 
     uint newTokenId = _GenerateNewTokenId();
 
@@ -143,6 +138,7 @@ abstract contract Monster is Ownable,
 
     /** @notice checkOwnership is a funtion to be called by the Battle contract
     *   to insure only the owners of monsters and battling with them.
+    *   @ require checkOwnership can only be called by the Battle contract. 
     */
 
     function checkOwnership(
